@@ -1,0 +1,18 @@
+using DG.Tweening;
+using UnityEngine;
+
+namespace CodeSketch.Utilities.Animations
+{
+    public class AnimationSequenceStepInterval : AnimationSequenceStep
+    {
+        [SerializeField] 
+        float _duration;
+
+        public override string displayName => "Interval";
+
+        public override void AddToSequence(AnimationSequence animationSequence)
+        {
+            animationSequence.sequence.AppendInterval(_duration);
+        }
+    }
+}
