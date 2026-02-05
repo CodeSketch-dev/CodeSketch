@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using PrimeTween;
 
-namespace CFramework
+namespace CodeSketch.Utitlities.UI
 {
     public class UIPressPrimeTween : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerUpHandler, IPointerExitHandler
     {

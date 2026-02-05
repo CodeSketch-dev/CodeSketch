@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace CFramework
+namespace CodeSketch.Utitlities.UI
 {
     public class UIPressDoTween : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerUpHandler, IPointerExitHandler
     {

@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace CodeSketch.Utitlities
 {
-    public class CSKSpriteRendererAnimated : MonoBase
+    public class SpriteRendererAnimated : MonoBase
     {
         [Header("Config")]
         [FormerlySerializedAs("_sprFrames")]

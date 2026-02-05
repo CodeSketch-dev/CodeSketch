@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Utils
+namespace CodeSketch.Utilities.Utils
 {
     /// <summary>
     /// Unified time utilities for save/load, cooldown, offline progress,
@@ -16,6 +16,22 @@ namespace CodeSketch.Utitlities.Utils
 
         public static long NowMs => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         public static long NowSeconds => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        // =====================================================
+        // CONVERT (ADDED)
+        // =====================================================
+
+        public static long ToUnixSeconds(DateTime utcDateTime)
+            => new DateTimeOffset(utcDateTime).ToUnixTimeSeconds();
+
+        public static long ToUnixMilliseconds(DateTime utcDateTime)
+            => new DateTimeOffset(utcDateTime).ToUnixTimeMilliseconds();
+
+        public static DateTime FromUnixSeconds(long unixSeconds)
+            => DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime;
+
+        public static DateTime FromUnixMilliseconds(long unixMilliseconds)
+            => DateTimeOffset.FromUnixTimeMilliseconds(unixMilliseconds).UtcDateTime;
 
         // =====================================================
         // SAVE TIME
@@ -40,6 +56,12 @@ namespace CodeSketch.Utitlities.Utils
             if (savedUnixMs <= 0) return TimeSpan.Zero;
             long delta = NowMs - savedUnixMs;
             return delta <= 0 ? TimeSpan.Zero : TimeSpan.FromMilliseconds(delta);
+        }
+
+        public static int DurationSeconds(long startUnixMs, long endUnixMs)
+        {
+            long delta = endUnixMs - startUnixMs;
+            return delta <= 0 ? 0 : (int)(delta / 1000);
         }
 
         // =====================================================
@@ -83,6 +105,26 @@ namespace CodeSketch.Utitlities.Utils
             return Mathf.Min(SecondsSince(savedUnixMs), maxSeconds);
         }
 
+        public static long ClampUnix(long unixMs, long min, long max)
+        {
+            if (unixMs < min) return min;
+            if (unixMs > max) return max;
+            return unixMs;
+        }
+
+        // =====================================================
+        // PROGRESS (ADDED)
+        // =====================================================
+
+        /// <summary>
+        /// Progress from start → end, clamped 0–1
+        /// </summary>
+        public static float Progress01(long startUnixMs, long endUnixMs)
+        {
+            if (endUnixMs <= startUnixMs) return 1f;
+            return Mathf.Clamp01((float)(NowMs - startUnixMs) / (endUnixMs - startUnixMs));
+        }
+
         // =====================================================
         // FORMAT – CORE
         // =====================================================
@@ -104,9 +146,6 @@ namespace CodeSketch.Utitlities.Utils
         // FORMAT – FROM SECONDS
         // =====================================================
 
-        /// <summary>
-        /// Format seconds to mm:ss
-        /// </summary>
         public static string FormatMMSS(int seconds)
         {
             if (seconds <= 0) return "00:00";
@@ -115,9 +154,6 @@ namespace CodeSketch.Utitlities.Utils
             return $"{m:D2}:{s:D2}";
         }
 
-        /// <summary>
-        /// Format seconds to HH:mm:ss
-        /// </summary>
         public static string FormatHHMMSS(int seconds)
         {
             if (seconds <= 0) return "00:00:00";
@@ -127,17 +163,11 @@ namespace CodeSketch.Utitlities.Utils
             return $"{h:D2}:{m:D2}:{s:D2}";
         }
 
-        /// <summary>
-        /// Auto format seconds:
-        /// >= 1h → HH:mm:ss
-        /// <  1h → mm:ss
-        /// </summary>
         public static string FormatAuto(int seconds)
         {
-            if (seconds >= 3600)
-                return FormatHHMMSS(seconds);
-            else
-                return FormatMMSS(seconds);
+            return seconds >= 3600
+                ? FormatHHMMSS(seconds)
+                : FormatMMSS(seconds);
         }
 
         // =====================================================
@@ -155,15 +185,9 @@ namespace CodeSketch.Utitlities.Utils
         }
 
         // =====================================================
-        // FORMAT – HUMAN READABLE (OPTIONAL)
+        // FORMAT – HUMAN READABLE
         // =====================================================
 
-        /// <summary>
-        /// Human readable format:
-        /// 2d 3h 15m
-        /// 5h 10m
-        /// 45s
-        /// </summary>
         public static string FormatHuman(int seconds)
         {
             if (seconds <= 0) return "0s";
