@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AtlasHealthBar
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 8
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 5b057564be7ae654da0e5f660478bfe5, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - c95935206d18f42399e9881ce6bdf61c: 21300000
+    - 1f44cb90b6ae648c783dac573bfe9cd0: 21300000
+    - bfad0e64f8ef1491c8def7e679187b89: 21300000
+    - af67f6c46933441daaa64d6880890586: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: c95935206d18f42399e9881ce6bdf61c, type: 3}
+  - {fileID: 21300000, guid: 1f44cb90b6ae648c783dac573bfe9cd0, type: 3}
+  - {fileID: 21300000, guid: bfad0e64f8ef1491c8def7e679187b89, type: 3}
+  - {fileID: 21300000, guid: af67f6c46933441daaa64d6880890586, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Slider11_Frame
+  - Slider11_Fill_Blue
+  - Slider11_Fill_Red
+  - Slider11_Fill_Yellow
+  m_RenderDataMap: {}
+  m_Tag: AtlasHealthBar
+  m_IsVariant: 0
