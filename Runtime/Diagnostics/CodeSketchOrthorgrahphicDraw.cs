@@ -1,7 +1,10 @@
 using CodeSketch.Core.Extensions;
 using CodeSketch.Mono;
 using UnityEngine;
+
+#if CODESKETCH_VERTX
 using Vertx.Debugging;
+#endif
 
 namespace CodeSketch.Diagnostics
 {
@@ -20,12 +23,14 @@ namespace CodeSketch.Diagnostics
 
         void OnDrawGizmos()
         {
+#if CODESKETCH_VERTX
             if (_camera == null) return;
 
             Vector2 size = new Vector2(_camera.GetWidth(), _camera.GetHeight());
             _bounds.center = new Vector3(TransformCached.position.x, TransformCached.position.y, 0);
             _bounds.size = size;
             D.raw(_bounds, _color);
+#endif
         }
 #endif
     }
