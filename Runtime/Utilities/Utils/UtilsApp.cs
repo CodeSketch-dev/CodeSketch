@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace CodeSketch.Utitlities.Utils
+namespace CodeSketch.Utilities.Utils
 {
     public static class UtilsApp
     {

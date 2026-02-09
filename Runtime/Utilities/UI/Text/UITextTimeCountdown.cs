@@ -2,7 +2,7 @@ using System;
 using CodeSketch.Core.Text;
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Text
+namespace CodeSketch.Utilities.Text
 {
     public class UITextTimeCountdown : UITextBase
     {

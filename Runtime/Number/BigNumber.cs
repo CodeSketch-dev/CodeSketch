@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using CodeSketch.Utitlities.Utils;
+using CodeSketch.Utilities.Utils;
 
 namespace CodeSketch.Number
 {

@@ -300,9 +300,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 717ef2d712a98d24082b737ab6c9b753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayDuration: 2
-  fullRect: {fileID: 1648679434525491037}
-  smallRect: {fileID: 8666705542668389917}
+  _displayDuration: 2
+  _fullRect: {fileID: 1648679434525491037}
+  _smallRect: {fileID: 8666705542668389917}
 --- !u!1 &8666705542668389917
 GameObject:
   m_ObjectHideFlags: 0

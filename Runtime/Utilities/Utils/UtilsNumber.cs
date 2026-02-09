@@ -3,7 +3,7 @@ using System.Globalization;
 using UnityEngine;
 using CodeSketch.Diagnostics;
 
-namespace CodeSketch.Utitlities.Utils
+namespace CodeSketch.Utilities.Utils
 {
     /// <summary>
     /// Compact number formatting & parsing utilities.

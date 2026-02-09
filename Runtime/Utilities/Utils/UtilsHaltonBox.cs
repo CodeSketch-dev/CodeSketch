@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Utils
+namespace CodeSketch.Utilities.Utils
 {
     /// <summary>
     /// Global Halton sequence sampler for Box volume.

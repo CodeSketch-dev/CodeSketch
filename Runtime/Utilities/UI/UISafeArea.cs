@@ -3,7 +3,7 @@ using UnityEngine;
 
 using CodeSketch.Diagnostics;
 
-namespace CodeSketch.Utitlities.UI
+namespace CodeSketch.Utilities.UI
 {
     /// <summary>
     /// Safe area implementation for notched mobile devices. Usage:

@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CodeSketch.Utitlities.UI
+namespace CodeSketch.Utilities.UI
 {
     /// <summary>
     /// Quản lý hiển thị và ẩn một UI Group có hiệu ứng fade (CanvasGroup).

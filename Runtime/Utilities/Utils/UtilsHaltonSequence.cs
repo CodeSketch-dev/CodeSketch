@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Utils
+namespace CodeSketch.Utilities.Utils
 {
     /// <summary>
     /// Global incremental Halton sequence sampler (base 2,3,5).

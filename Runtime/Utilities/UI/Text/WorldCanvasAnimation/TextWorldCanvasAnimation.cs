@@ -4,7 +4,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Text
+namespace CodeSketch.Utilities.Text
 {
     [Serializable]
     public class TextWorldCanvasAnimation

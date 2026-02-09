@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeSketch.Utitlities.UI
+namespace CodeSketch.Utilities.UI
 {
     public class UIImageAnimated : MonoBase
     {

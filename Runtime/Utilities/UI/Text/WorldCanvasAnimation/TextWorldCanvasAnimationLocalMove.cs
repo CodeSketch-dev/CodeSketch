@@ -3,7 +3,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Text
+namespace CodeSketch.Utilities.Text
 {
     public class TextWorldCanvasAnimationLocalMove : TextWorldCanvasAnimation
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeSketch.Utitlities.Utils
+namespace CodeSketch.Utilities.Utils
 {
     public static class UtilsProbability
     {

@@ -2,7 +2,7 @@ using CodeSketch.Core.Text;
 using DG.Tweening;
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Text
+namespace CodeSketch.Utilities.Text
 {
     [System.Serializable]
     public class TextWorldCanvasAnimationFade : TextWorldCanvasAnimation

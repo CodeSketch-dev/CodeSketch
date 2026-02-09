@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Text
+namespace CodeSketch.Utilities.Text
 {
     public class UITextTimeCountdownMS : UITextTimeCountdown
     {

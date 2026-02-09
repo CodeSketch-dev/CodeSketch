@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 using CodeSketch.Mono;
 
-namespace CodeSketch.Utitlities.UI
+namespace CodeSketch.Utilities.UI
 {
     public class UIRawImageAnimated : MonoBase
     {

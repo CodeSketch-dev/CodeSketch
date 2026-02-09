@@ -2,7 +2,7 @@ using System;
 using CodeSketch.Mono;
 using UnityEngine.EventSystems;
 
-namespace CodeSketch.Utitlities.UI
+namespace CodeSketch.Utilities.UI
 {
     public class UIPointerClick : MonoBase, IPointerDownHandler, IPointerUpHandler
     {

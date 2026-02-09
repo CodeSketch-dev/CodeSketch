@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using CodeSketch.Mono;
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.Billboard
+namespace CodeSketch.Utilities.Billboard
 {
     public class BillboardManager : MonoSingleton<BillboardManager>
     {

@@ -4,7 +4,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace CodeSketch.Utitlities.CameraSystem
+namespace CodeSketch.Utilities.CameraSystem
 {
     public class UtilsCameraPerspectiveFitView : MonoBehaviour
     {
