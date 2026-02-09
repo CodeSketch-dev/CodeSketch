@@ -24,7 +24,12 @@ namespace CodeSketch.AdsLoading
             _cancelToken?.Cancel();
         }
 
-        public void Show(Action actionComplete)
+        public static void Show(Action callback = null)
+        {
+            SafeInstance.Show_Internal(callback);
+        }
+
+        void Show_Internal(Action actionComplete)
         {
             if (IsAdsBreakSmallRect)
             {
