@@ -26,6 +26,7 @@ namespace CodeSketch.AdsLoading
 
         public static void Show(Action callback = null)
         {
+            if (!HasInstance) return;
             SafeInstance.Show_Internal(callback);
         }
 
