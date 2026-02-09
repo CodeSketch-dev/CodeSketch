@@ -2,7 +2,8 @@
     "name": "CodeSketch.Data",
     "rootNamespace": "CodeSketch.Data",
     "references": [
-        "GUID:4a406af209b8747498480304eba12888"
+        "GUID:4a406af209b8747498480304eba12888",
+        "GUID:108ac46ce0712a94397fd41526b767cc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
