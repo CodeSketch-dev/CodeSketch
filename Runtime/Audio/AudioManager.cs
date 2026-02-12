@@ -15,13 +15,15 @@ namespace CodeSketch.Audio
         public static readonly DataValue<float> VolumeSound = new DataValue<float>(1.0f);
 
         public static readonly HashSet<AudioScript> HashsetActives = new HashSet<AudioScript>(); // Lưu trữ các AudioScript đang active
-        public static ObjectPool<AudioScript> Pool;
+        
+        ObjectPool<AudioScript> _pool;
+        public static ObjectPool<AudioScript> Pool => SafeInstance._pool;
 
         #region MonoBehaviour
 
-        protected override void OnEnable()
+        protected override void Awake()
         {
-            base.OnEnable();
+            base.Awake();
             
             InitPool();
         }
@@ -81,7 +83,7 @@ namespace CodeSketch.Audio
         {
             if (Pool != null) return;
             
-            Pool = new ObjectPool<AudioScript>(
+            _pool = new ObjectPool<AudioScript>(
                 createFunc: () =>
                 {
                     GameObject go = new GameObject($"{typeof(AudioScript)}", typeof(AudioSource));
