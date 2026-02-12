@@ -12,7 +12,7 @@ namespace CodeSketch.Settings
 #else
     [System.Serializable]
 #endif
-    public class DataSettings : DataBlock<DataSettings>
+    public partial class DataSettings : DataBlock<DataSettings>
     {
         [SerializeField] DataValue<float> _soundVolume;
         [SerializeField] DataValue<float> _musicVolume;
