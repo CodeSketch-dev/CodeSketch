@@ -19,9 +19,9 @@ namespace CodeSketch.Audio
 
         #region MonoBehaviour
 
-        protected override void Awake()
+        protected override void OnEnable()
         {
-            base.Awake();
+            base.OnEnable();
             
             InitPool();
         }
