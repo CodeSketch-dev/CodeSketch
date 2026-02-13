@@ -1,10 +1,18 @@
 using System;
 using CodeSketch.Mono;
 
+#if CODESKETCH_MEMORYPACK
+using MemoryPack;
+#endif
+
 namespace CodeSketch.Data
 {
+    #if CODESKETCH_MEMORYPACK
+    [MemoryPackable]
+    #else 
     [Serializable]
-    public class DataBlock<T> where T : DataBlock<T>
+    #endif
+    public partial class DataBlock<T> where T : DataBlock<T>
     {
         static T s_instance;
 
