@@ -106,10 +106,13 @@ namespace CodeSketch.Audio
 
             float volume = GetVolume();
             AudioSource.mute = volume <= 0;
-            AudioSource.volume = volume;
-            
+
+            if (Mathf.Approximately(AudioSource.volume, volume))
+                return;
+
             Tween.AudioVolume(AudioSource, volume, 0.1f);
         }
+
 
         void VolumeSound_EventValueChanged(float volume)
         {
