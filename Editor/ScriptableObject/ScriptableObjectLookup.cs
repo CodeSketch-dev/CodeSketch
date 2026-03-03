@@ -1,162 +1,57 @@
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace CodeSketch.Editor.Scriptable
 {
-    /// <summary>
-    /// Helper class for instantiating ScriptableObjects.
-    /// Class này hỗ trợ tìm kiếm các ScriptableObject trong project và tạo nhanh chúng
-    /// </summary>
     public class ScriptableObjectLookup
     {
-        // =====================================================
-        // MENU
-        // =====================================================
-
         [MenuItem("Assets/Create/Scriptable Object", false, 0)]
         public static void CreateAssembly()
         {
-            List<string> assemblyNames = new List<string>
+            var allScriptableObjects = new List<Type>();
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (var assembly in assemblies)
             {
-                "Assembly-CSharp"
-            };
+                string assemblyName = assembly.GetName().Name;
 
-            // Các subfolder muốn bỏ qua khi scan asmdef
-            string[] ignoreSubFolders =
-            {
-                "CodeSketch/Editor",
-                "CodeSketch/Modules",
-                "CodeSketch/Essentials/Core/ScriptableObject/",
-                "Plugins/OdinSerializer",
-                "Plugins/StompyRobot"
-            };
+                bool isGameAssembly = assemblyName == "Assembly-CSharp";
 
-            LoadFromFolder(ref assemblyNames, "_Game/", ignoreSubFolders);
-            LoadFromFolder(ref assemblyNames, "CodeSketch", ignoreSubFolders);
+                bool isCodeSketchRuntime =
+                    assemblyName.StartsWith("CodeSketch") &&
+                    !assemblyName.Contains("Editor");
+                bool isInstaller = assemblyName.Contains("CodeSketch.Installer");
 
-            Create(assemblyNames.ToArray());
-        }
-
-        // =====================================================
-        // LOAD ASSEMBLY FROM FOLDER
-        // =====================================================
-
-        static void LoadFromFolder(
-            ref List<string> assemblyNames,
-            string folder,
-            string[] ignoreSubFolders)
-        {
-            string folderPath = Path.Combine(Application.dataPath, folder);
-            assemblyNames.AddRange(
-                LoadAssembliesFromFolder(folderPath, ignoreSubFolders)
-            );
-        }
-
-        /// <summary>
-        /// Tìm kiếm và trả về tên của các assembly (.asmdef) trong thư mục chỉ định
-        /// Có hỗ trợ ignore theo subfolder
-        /// </summary>
-        static List<string> LoadAssembliesFromFolder(
-            string folderPath,
-            string[] ignoreSubFolders)
-        {
-            var assemblyNames = new List<string>();
-
-            if (!Directory.Exists(folderPath))
-                return assemblyNames;
-
-            var asmdefFiles = Directory.GetFiles(
-                folderPath,
-                "*.asmdef",
-                SearchOption.AllDirectories
-            );
-
-            foreach (var asmdefFile in asmdefFiles)
-            {
-                // Normalize path cho an toàn cross-platform
-                string normalizedPath = asmdefFile.Replace('\\', '/');
-
-                // Ignore subfolders
-                if (ignoreSubFolders != null && ignoreSubFolders.Length > 0)
-                {
-                    bool ignored = false;
-
-                    for (int i = 0; i < ignoreSubFolders.Length; i++)
-                    {
-                        var ignore = ignoreSubFolders[i];
-                        if (string.IsNullOrEmpty(ignore))
-                            continue;
-
-                        if (normalizedPath.Contains($"/{ignore}/"))
-                        {
-                            ignored = true;
-                            break;
-                        }
-                    }
-
-                    if (ignored)
-                        continue;
-                }
-
-                try
-                {
-                    var jsonText = File.ReadAllText(asmdefFile);
-                    var jsonObj = JObject.Parse(jsonText);
-                    var assemblyName = jsonObj["name"].ToString();
-
-                    if (!string.IsNullOrEmpty(assemblyName))
-                        assemblyNames.Add(assemblyName);
-                }
-                catch
-                {
-                    // Ignore invalid or unreadable asmdef
-                }
-            }
-
-            return assemblyNames;
-        }
-
-        // =====================================================
-        // CREATE SCRIPTABLE OBJECT WINDOW
-        // =====================================================
-
-        /// <summary>
-        /// Search all ScriptableObject classes in the given assemblies
-        /// and show a popup window to create them.
-        /// </summary>
-        public static void Create(params string[] assemblyNames)
-        {
-            var allScriptableObjects = new List<System.Type>();
-
-            foreach (string assemblyName in assemblyNames)
-            {
-                var assembly = GetAssembly(assemblyName);
-                if (assembly == null)
+                if (!isGameAssembly && !isCodeSketchRuntime || isInstaller)
                     continue;
 
                 try
                 {
-                    allScriptableObjects.AddRange(
-                        assembly.GetTypes()
-                            .Where(t =>
-                                t.IsSubclassOf(typeof(ScriptableObject)) &&
-                                !t.IsAbstract)
-                            .ToArray()
-                    );
+                    var types = assembly.GetTypes()
+                        .Where(t =>
+                            typeof(ScriptableObject).IsAssignableFrom(t) &&
+                            !t.IsAbstract &&
+                            !t.IsGenericType
+                        );
+
+                    allScriptableObjects.AddRange(types);
                 }
                 catch
                 {
-                    // Ignore broken assemblies
+                    // ignore broken assembly
                 }
             }
 
             if (allScriptableObjects.Count == 0)
+            {
+                Debug.LogWarning("No ScriptableObject types found in Assembly-CSharp or CodeSketch assemblies.");
                 return;
+            }
 
             var window = EditorWindow.GetWindow<ScriptableObjectWindow>(
                 true,
@@ -164,27 +59,11 @@ namespace CodeSketch.Editor.Scriptable
                 true
             );
 
-            window.Types = allScriptableObjects.ToArray();
+            window.Types = allScriptableObjects
+                .OrderBy(t => t.Name)
+                .ToArray();
+
             window.ShowPopup();
-        }
-
-        // =====================================================
-        // ASSEMBLY RESOLUTION
-        // =====================================================
-
-        /// <summary>
-        /// Trả về assembly theo tên
-        /// </summary>
-        static Assembly GetAssembly(string name)
-        {
-            try
-            {
-                return Assembly.Load(new AssemblyName(name));
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

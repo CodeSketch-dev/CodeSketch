@@ -8,157 +8,84 @@ namespace CodeSketch.Editor.Scriptable
 {
     internal class EndNameEdit : EndNameEditAction
     {
+        #region Implemented abstract members of EndNameEditAciton
+
         public override void Action(int instanceId, string pathName, string resourceFile)
         {
-            var asset = EditorUtility.InstanceIDToObject(instanceId);
-            AssetDatabase.CreateAsset(asset, AssetDatabase.GenerateUniqueAssetPath(pathName));
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            AssetDatabase.CreateAsset(EditorUtility.InstanceIDToObject(instanceId), AssetDatabase.GenerateUniqueAssetPath(pathName));
         }
-    }
 
+        #endregion
+    }
+    
     /// <summary>
-    /// ScriptableObject browser window.
-    /// Automatically finds all ScriptableObjects inside CodeSketch assemblies.
-    /// Works in Assets folder AND Packages (Git URL / UPM).
+    /// Scriptable object window.
+    /// Cửa sổ hiển thị các ScriptableObject đã tìm được trong Project
     /// </summary>
     public class ScriptableObjectWindow : EditorWindow
     {
-        string _search = "";
-        Vector2 _scroll;
+        string _strSearch = "";
+        Vector2 _scrollPosition;
 
-        Type[] _types;
         string[] _names;
+        Type[] _types;
 
-        bool _focused;
-
+        bool _focused = false;
+        
         public Type[] Types
         {
             get => _types;
-            set => _types = value;
-        }
-
-        // =========================================================
-        // MENU
-        // =========================================================
-
-        [MenuItem("Tools/CodeSketch/ScriptableObject Browser")]
-        public static void Open()
-        {
-            var window = GetWindow<ScriptableObjectWindow>();
-            window.titleContent = new GUIContent("ScriptableObjects");
-            window.minSize = new Vector2(350, 400);
-            window.Show();
-        }
-
-        // =========================================================
-        // INIT
-        // =========================================================
-
-        void OnEnable()
-        {
-            LoadTypes();
-        }
-
-        void LoadTypes()
-        {
-            // Unity internal cached type system (works with Packages)
-            _types = TypeCache.GetTypesDerivedFrom<ScriptableObject>()
-                .Where(t =>
-                    !t.IsAbstract &&
-                    !t.IsGenericType &&
-                    t.Namespace != null &&
-                    t.Namespace.StartsWith("CodeSketch") // filter namespace
-                )
-                .OrderBy(t => t.Name)
-                .ToArray();
-
-            _names = _types.Select(t => t.FullName).ToArray();
-
-            Debug.Log($"[CodeSketch] Found {_types.Length} ScriptableObject types.");
-        }
-
-        // =========================================================
-        // GUI
-        // =========================================================
-
-        void OnGUI()
-        {
-            DrawSearchBar();
-
-            if (_types == null || _types.Length == 0)
+            set
             {
-                EditorGUILayout.HelpBox("No ScriptableObject types found.", MessageType.Info);
-                return;
+                _types = value;
+                _names = _types.Select(t => t.FullName).ToArray();
             }
+        }
+        
+        public void OnGUI()
+        {
+            //Search bar
+            GUILayout.BeginHorizontal(GUI.skin.FindStyle("Toolbar") ?? GUI.skin.box);
 
-            _scroll = EditorGUILayout.BeginScrollView(_scroll);
+            GUI.SetNextControlName("SearchBar");
+
+            _strSearch = GUILayout.TextField(_strSearch, GUI.skin.FindStyle("ToolbarSeachTextField") ?? GUI.skin.textField);
+
+            GUILayout.EndHorizontal();
+
+            if (_types == null)
+                return;
+
+            _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, false, true);
 
             for (int i = 0; i < _types.Length; i++)
             {
-                if (!string.IsNullOrEmpty(_search) &&
-                    _types[i].Name.IndexOf(_search, StringComparison.OrdinalIgnoreCase) < 0)
+                if (_strSearch != "" && _types[i].Name.IndexOf(_strSearch, StringComparison.OrdinalIgnoreCase) < 0)
                     continue;
 
-                DrawTypeButton(i);
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button(_types[i].Name))
+                {
+                    var asset = CreateInstance(_types[i]);
+                    ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
+                        asset.GetInstanceID(),
+                        CreateInstance<EndNameEdit>(),
+                        $"{_names[i]}.asset",
+                        AssetPreview.GetMiniThumbnail(asset),
+                        null);
+
+                    Close();
+                }
+                GUILayout.EndHorizontal();
             }
 
-            EditorGUILayout.EndScrollView();
+            GUILayout.EndScrollView();
 
             if (!_focused)
             {
-                GUI.FocusControl("SearchField");
+                GUI.FocusControl("SearchBar");
                 _focused = true;
             }
-        }
-
-        void DrawSearchBar()
-        {
-            GUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            GUI.SetNextControlName("SearchField");
-
-            _search = GUILayout.TextField(
-                _search,
-                GUI.skin.FindStyle("ToolbarSeachTextField") ?? EditorStyles.textField
-            );
-
-            if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(60)))
-            {
-                LoadTypes();
-            }
-
-            GUILayout.EndHorizontal();
-        }
-
-        void DrawTypeButton(int index)
-        {
-            GUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(_types[index].Name, GUILayout.Height(22)))
-            {
-                CreateAssetOfType(_types[index], _names[index]);
-                Close();
-            }
-
-            GUILayout.EndHorizontal();
-        }
-
-        // =========================================================
-        // CREATE
-        // =========================================================
-
-        void CreateAssetOfType(Type type, string fullName)
-        {
-            var asset = CreateInstance(type);
-
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
-                asset.GetInstanceID(),
-                CreateInstance<EndNameEdit>(),
-                $"{type.Name}.asset",
-                AssetPreview.GetMiniThumbnail(asset),
-                null
-            );
         }
     }
 }
