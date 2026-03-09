@@ -16,7 +16,7 @@ namespace CodeSketch.Patterns.Pool
             get => _config;
             set => _config = value;
         }
-        
+
         protected virtual void Awake()
         {
             if (_config != null)
@@ -33,13 +33,13 @@ namespace CodeSketch.Patterns.Pool
             base.OnEnable();
             TrySubscribe();
         }
-        
+
         protected override void OnDisable()
         {
             base.OnDisable();
             TryUnsubscribe();
         }
-        
+
         protected virtual void OnDestroy()
         {
             TryUnsubscribe();
@@ -53,12 +53,20 @@ namespace CodeSketch.Patterns.Pool
 
         void TrySubscribe()
         {
-            MonoCallback.SafeInstance.EventActiveSceneChanged += MonoCallback_EventActiveSceneChanged;
+            var cb = CodeSketch.Mono.MonoCallback.HasInstance ? CodeSketch.Mono.MonoCallback.Instance : null;
+            if (cb != null)
+            {
+                cb.EventActiveSceneChanged += MonoCallback_EventActiveSceneChanged;
+            }
         }
 
         void TryUnsubscribe()
         {
-            MonoCallback.SafeInstance.EventActiveSceneChanged -= MonoCallback_EventActiveSceneChanged;
+            var cb = CodeSketch.Mono.MonoCallback.HasInstance ? CodeSketch.Mono.MonoCallback.Instance : null;
+            if (cb != null)
+            {
+                cb.EventActiveSceneChanged -= MonoCallback_EventActiveSceneChanged;
+            }
         }
 
         void MonoCallback_EventActiveSceneChanged(Scene sceneCurrent, Scene sceneNext)
