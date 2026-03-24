@@ -32,8 +32,7 @@ namespace CodeSketch.Utilities.Animations
         [InlineButton("@_isSpeedBased = false", Label = "Speed Based", ShowIf = ("@_isSpeedBased == true"))]
         protected float _duration = 1.0f;
 
-        [SerializeField]
-        protected readonly Ease _ease = Ease.Linear;
+        [SerializeField] protected Ease _ease = Ease.Linear;
 
         [SerializeField, HorizontalGroup("Update")]
         [InlineButton("@_isIndependentUpdate = true", Label = "Timescale Based", ShowIf = ("@_isIndependentUpdate == false"))]
