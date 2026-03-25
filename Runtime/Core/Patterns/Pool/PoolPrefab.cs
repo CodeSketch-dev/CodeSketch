@@ -20,7 +20,7 @@ namespace CodeSketch.Patterns.Pool
                 throw new InvalidOperationException("PoolPrefab: Config hoặc prefab null!");
 
             Config = config;
-            
+
             _prefab = config.Prefab;
 
             _pool = new ObjectPool<PoolPrefabItem>(
@@ -29,9 +29,29 @@ namespace CodeSketch.Patterns.Pool
             );
 
             // Prewarm
-            while (_pool.CountInactive < config.PoolPrewarm)
+            var targetPrewarm = Mathf.Min(config.PoolPrewarm, config.PoolCapacityMax);
+            if (config.PoolPrewarm > config.PoolCapacityMax)
             {
+                Debug.LogWarning($"PoolPrefab: Prewarm ({config.PoolPrewarm}) is greater than max capacity ({config.PoolCapacityMax}) for {config.name}. Clamp to max capacity.");
+            }
+
+            int safetyCount = 0;
+            int maxSafetyCount = Mathf.Max(8, targetPrewarm * 2 + 8);
+            while (_pool.CountInactive < targetPrewarm)
+            {
+                if (++safetyCount > maxSafetyCount)
+                {
+                    Debug.LogError($"PoolPrefab: Prewarm safety break for {config.name}. Inactive={_pool.CountInactive}, Target={targetPrewarm}.");
+                    break;
+                }
+
                 var go = Create();
+                if (!go)
+                {
+                    Debug.LogError($"PoolPrefab: Failed to create pooled item for {config.name}. Ensure prefab has PoolPrefabItem component.");
+                    break;
+                }
+
                 _pool.Release(go);
             }
         }
@@ -40,12 +60,12 @@ namespace CodeSketch.Patterns.Pool
         PoolPrefabItem Create()
         {
             PoolPrefabItem item = null;
-            
+
             if (Application.isPlaying)
             {
-                var instance = Object.Instantiate(_prefab); 
+                var instance = Object.Instantiate(_prefab);
                 item = instance.GetComponent<PoolPrefabItem>();
-                
+
                 if (item == null)
                 {
                     Object.Destroy(instance);
@@ -61,7 +81,7 @@ namespace CodeSketch.Patterns.Pool
         void OnGet(PoolPrefabItem item)
         {
             if (!item) return;
-            
+
             if (Config.PersistAcrossScenes)
             {
                 Pooler.Attach(item);
@@ -70,7 +90,7 @@ namespace CodeSketch.Patterns.Pool
             {
                 item.TransformCached.SetParent(null);
             }
-            
+
             item.GameObjectCached.SetActive(true);
         }
 
@@ -108,14 +128,21 @@ namespace CodeSketch.Patterns.Pool
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public PoolPrefabItem Get()
         {
-            var item = _pool.Get();
-            if (item == null)
+            for (int attempt = 0; attempt < 2; attempt++)
             {
-                Create();
-                return Get();
+                var item = _pool.Get();
+                if (item)
+                    return item;
+
+                var created = Create();
+                if (created)
+                {
+                    _pool.Release(created);
+                }
             }
 
-            return item;
+            Debug.LogError($"PoolPrefab: Get failed for {Config.name}. Pool returned null item.");
+            return null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -14,9 +14,9 @@ namespace CodeSketch.Patterns.Pool
         static readonly HashSet<GameObject> s_Released = new();
         static readonly HashSet<GameObject> s_PendingInstances = new();
         static readonly HashSet<GameObject> s_Actives = new();
-        
+
         static readonly Dictionary<GameObject, PoolPrefabItem> _cache = new();
-        
+
         public static int ActiveCount => s_Actives.Count;
 
         [RuntimeInitializeOnLoadMethod]
@@ -33,7 +33,7 @@ namespace CodeSketch.Patterns.Pool
         public static void Clean()
         {
             PoolReleaseScheduler.Clear();
-            
+
             s_Released.Clear();
             s_Actives.Clear();
             s_PendingInstances.Clear();
@@ -41,7 +41,7 @@ namespace CodeSketch.Patterns.Pool
             foreach (var pool in _poolLookup.Values)
             {
                 if (pool.Config != null && pool.Config.PersistAcrossScenes) continue;
-                
+
                 pool.Clear();
                 Pooler.Release(pool.Config);
             }
@@ -49,13 +49,25 @@ namespace CodeSketch.Patterns.Pool
 
         public static void Init(params PoolPrefabConfig[] configs)
         {
+            if (configs == null || configs.Length == 0)
+                return;
+
             for (int i = 0; i < configs.Length; i++)
             {
                 var config = configs[i];
                 if (config == null || !config.Prefab) continue;
-                
+
                 if (!_poolLookup.ContainsKey(config))
-                    _poolLookup.Add(config, new PoolPrefab(config));
+                {
+                    try
+                    {
+                        _poolLookup.Add(config, new PoolPrefab(config));
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogError($"PoolPrefabGlobal: Init failed for config {config.name}. {ex.Message}\n{ex.StackTrace}");
+                    }
+                }
             }
         }
 
@@ -63,13 +75,13 @@ namespace CodeSketch.Patterns.Pool
         public static PoolPrefabItem Get(PoolPrefabConfig config)
         {
             if (config == null) return null;
-            
+
             var item = GetPool(config).Get();
             if (item == null) return null;
-            
+
             var go = item.GameObjectCached;
             _cache[go] = item;
-            
+
             s_Released.Remove(go);
             s_PendingInstances.Remove(go);
             s_Actives.Add(go);
@@ -147,11 +159,11 @@ namespace CodeSketch.Patterns.Pool
         internal static void MarkAsReleased(PoolPrefabItem ins)
         {
             if (!ins) return;
-            
+
             s_PendingInstances.Remove(ins.GameObjectCached);
             s_Released.Add(ins.GameObjectCached);
             _cache.Remove(ins.GameObjectCached);
-            
+
             GetPool(ins.Config).Release(ins);
         }
 
