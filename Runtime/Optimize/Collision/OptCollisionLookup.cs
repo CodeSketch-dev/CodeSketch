@@ -9,6 +9,9 @@ namespace CodeSketch.Optimize
         // Collider → (Type → List<Owner>)
         static readonly Dictionary<Collider, Dictionary<Type, List<object>>> _map = new();
 
+        // Reusable iteration buffer – avoids allocation and guards against collection-modified errors
+        static readonly List<object> _iterBuffer = new(8);
+
         // =========================================================
         // REGISTER
         // =========================================================
@@ -76,9 +79,14 @@ namespace CodeSketch.Optimize
             if (!typeMap.TryGetValue(typeof(T), out var list))
                 return;
 
-            foreach (var obj in list)
+            // Copy to buffer before iterating so that any Register/Unregister
+            // triggered inside action() cannot cause "collection was modified" errors.
+            _iterBuffer.Clear();
+            _iterBuffer.AddRange(list);
+
+            for (int i = 0; i < _iterBuffer.Count; i++)
             {
-                if (obj is T match)
+                if (_iterBuffer[i] is T match)
                     action(match);
             }
         }
