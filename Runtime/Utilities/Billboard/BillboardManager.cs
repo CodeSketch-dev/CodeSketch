@@ -7,10 +7,10 @@ namespace CodeSketch.Utilities.Billboard
     public class BillboardManager : MonoSingleton<BillboardManager>
     {
         protected override bool PersistAcrossScenes => true;
-        
+
         readonly List<Billboard> _billboards = new List<Billboard>();
         static readonly List<int> _invalidIndexes = new(); // Đánh dấu các object đã bị destroy
-        
+
         static Transform _cameraTrans;
 
         public Transform CameraTrans
@@ -69,13 +69,27 @@ namespace CodeSketch.Utilities.Billboard
 
         public static void Register(Billboard billboard)
         {
-            if (billboard != null && !SafeInstance._billboards.Contains(billboard))
-                SafeInstance._billboards.Add(billboard);
+            if (billboard == null || IsDestroyed)
+                return;
+
+            var instance = SafeInstance;
+            if (instance == null)
+                return;
+
+            if (!instance._billboards.Contains(billboard))
+                instance._billboards.Add(billboard);
         }
 
         public static void Unregister(Billboard billboard)
         {
-            SafeInstance._billboards.Remove(billboard);
+            if (billboard == null || !HasInstance || IsDestroyed)
+                return;
+
+            var instance = Instance;
+            if (instance == null)
+                return;
+
+            instance._billboards.Remove(billboard);
         }
     }
 }
