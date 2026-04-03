@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using CodeSketch.Mono;
-using Unity.Plastic.Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 namespace CodeSketch.Modules.StatSystem
@@ -26,7 +26,7 @@ namespace CodeSketch.Modules.StatSystem
                     DataStatBuff.Remove(buff.SourceId);
                     continue;
                 }
-                
+
                 // Code chỗ item tự phải bắt event, và tạo lại buff
                 OnLoadBuffSaved?.Invoke(buff.SourceId, buff.RemainingTime);
             }
@@ -41,7 +41,7 @@ namespace CodeSketch.Modules.StatSystem
                 Modifier = new StatModifier(value.FlatValue, value.PercentValue)
             });
         }
-        
+
         public static void LoadBuff(Stat stat, StatBuffValue value)
         {
             GetSystem(stat).Load(new StatBuff()

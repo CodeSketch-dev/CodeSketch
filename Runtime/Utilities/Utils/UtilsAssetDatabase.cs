@@ -1,5 +1,6 @@
-#if UNITY_EDITOR
 using System.Collections.Generic;
+
+#if UNITY_EDITOR
 using UnityEditor;
 #endif
 
@@ -35,7 +36,7 @@ namespace CodeSketch.Utilities.Utils
             return null;
 #endif
         }
-        
+
         public static List<T> LoadAllAssetsInFolder<T>(string folderPath) where T : Object
         {
             var list = new List<T>();
@@ -49,7 +50,7 @@ namespace CodeSketch.Utilities.Utils
                     list.Add(asset);
             }
 #endif
-             return list;
+            return list;
         }
     }
 }
