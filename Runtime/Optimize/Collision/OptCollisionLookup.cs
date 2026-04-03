@@ -6,11 +6,9 @@ namespace CodeSketch.Optimize
 {
     public static class OptCollisionLookup
     {
-        // Collider → (Type → List<Owner>)
-        static readonly Dictionary<Collider, Dictionary<Type, List<object>>> _map = new();
-
-        // Reusable iteration buffer – avoids allocation and guards against collection-modified errors
-        static readonly List<object> _iterBuffer = new(8);
+        // Collider → (Type → Owner array snapshot)
+        // Use immutable snapshot arrays for lock-free fast reads (no per-query allocation).
+        static readonly Dictionary<Collider, Dictionary<Type, object[]>> _map = new();
 
         // =========================================================
         // REGISTER
@@ -20,25 +18,37 @@ namespace CodeSketch.Optimize
         {
             if (type == null || owner == null || colliders == null)
                 return;
-
             foreach (var col in colliders)
             {
                 if (!col) continue;
 
                 if (!_map.TryGetValue(col, out var typeMap))
                 {
-                    typeMap = new Dictionary<Type, List<object>>(4);
+                    typeMap = new Dictionary<Type, object[]>(4);
                     _map[col] = typeMap;
                 }
 
-                if (!typeMap.TryGetValue(type, out var list))
+                if (!typeMap.TryGetValue(type, out var arr))
                 {
-                    list = new List<object>(2);
-                    typeMap[type] = list;
+                    // create single-entry array
+                    typeMap[type] = new object[] { owner };
+                    continue;
                 }
 
-                if (!list.Contains(owner)) // tránh double register
-                    list.Add(owner);
+                // check existing
+                bool found = false;
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    if (ReferenceEquals(arr[i], owner)) { found = true; break; }
+                }
+
+                if (found) continue;
+
+                // append by creating new snapshot array
+                var newArr = new object[arr.Length + 1];
+                Array.Copy(arr, newArr, arr.Length);
+                newArr[arr.Length] = owner;
+                typeMap[type] = newArr;
             }
         }
 
@@ -46,17 +56,31 @@ namespace CodeSketch.Optimize
         {
             if (type == null || owner == null || colliders == null)
                 return;
-
             foreach (var col in colliders)
             {
                 if (!col) continue;
                 if (!_map.TryGetValue(col, out var typeMap)) continue;
-                if (!typeMap.TryGetValue(type, out var list)) continue;
+                if (!typeMap.TryGetValue(type, out var arr)) continue;
 
-                list.Remove(owner);
+                int idx = -1;
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    if (ReferenceEquals(arr[i], owner)) { idx = i; break; }
+                }
 
-                if (list.Count == 0)
+                if (idx < 0) continue;
+
+                if (arr.Length == 1)
+                {
                     typeMap.Remove(type);
+                }
+                else
+                {
+                    var newArr = new object[arr.Length - 1];
+                    if (idx > 0) Array.Copy(arr, 0, newArr, 0, idx);
+                    if (idx < arr.Length - 1) Array.Copy(arr, idx + 1, newArr, idx, arr.Length - idx - 1);
+                    typeMap[type] = newArr;
+                }
 
                 if (typeMap.Count == 0)
                     _map.Remove(col);
@@ -76,17 +100,13 @@ namespace CodeSketch.Optimize
             if (!_map.TryGetValue(collider, out var typeMap))
                 return;
 
-            if (!typeMap.TryGetValue(typeof(T), out var list))
+            if (!typeMap.TryGetValue(typeof(T), out var arr))
                 return;
 
-            // Copy to buffer before iterating so that any Register/Unregister
-            // triggered inside action() cannot cause "collection was modified" errors.
-            _iterBuffer.Clear();
-            _iterBuffer.AddRange(list);
-
-            for (int i = 0; i < _iterBuffer.Count; i++)
+            // arr is an immutable snapshot array — safe to iterate without copying
+            for (int i = 0; i < arr.Length; i++)
             {
-                if (_iterBuffer[i] is T match)
+                if (arr[i] is T match)
                     action(match);
             }
         }
@@ -102,11 +122,11 @@ namespace CodeSketch.Optimize
 
             if (!_map.TryGetValue(collider, out var typeMap)) return false;
 
-            if (!typeMap.TryGetValue(typeof(T), out var list)) return false;
+            if (!typeMap.TryGetValue(typeof(T), out var arr)) return false;
 
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < arr.Length; i++)
             {
-                if (list[i] is T match)
+                if (arr[i] is T match)
                 {
                     owner = match;
                     return true;
@@ -114,6 +134,32 @@ namespace CodeSketch.Optimize
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Lấy snapshot các owner của type T đã đăng ký cho collider vào List tái sử dụng.
+        /// - Không tạo mảng nội tại (không allocate object[] mới ngoài arr),
+        /// - Copy các reference vào `result` do caller cung cấp để tránh allocations bên trong.
+        /// Sử dụng khi cần duyệt nhiều owner nhưng muốn kiểm soát bộ nhớ (pass reuse List).
+        /// </summary>
+        public static void GetSnapshot<T>(Collider collider, System.Collections.Generic.List<T> result) where T : class
+        {
+            if (result == null)
+                return;
+
+            result.Clear();
+
+            if (!collider) return;
+
+            if (!_map.TryGetValue(collider, out var typeMap)) return;
+
+            if (!typeMap.TryGetValue(typeof(T), out var arr)) return;
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (arr[i] is T match)
+                    result.Add(match);
+            }
         }
 
         // =========================================================
