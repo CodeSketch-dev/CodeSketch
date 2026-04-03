@@ -41,14 +41,14 @@ namespace CodeSketch.Optimize
             OptCollisionLookup.Unregister(typeof(T), this, _colliders);
         }
 
-#if UNITY_EDITOR
         protected virtual void OnValidate()
         {
+#if UNITY_EDITOR
             if (!Application.isPlaying)
             {
                 _colliders = GetComponentsInChildren<Collider>(true);
             }
-        }
 #endif
+        }
     }
 }
