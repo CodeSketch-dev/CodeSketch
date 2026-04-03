@@ -91,6 +91,31 @@ namespace CodeSketch.Optimize
             }
         }
 
+        /// <summary>
+        /// Try get first registered owner of type T for the given collider.
+        /// Fast path when only a single owner is needed (avoids copying iteration buffer).
+        /// </summary>
+        public static bool TryGetFirst<T>(Collider collider, out T owner) where T : class
+        {
+            owner = null;
+            if (!collider) return false;
+
+            if (!_map.TryGetValue(collider, out var typeMap)) return false;
+
+            if (!typeMap.TryGetValue(typeof(T), out var list)) return false;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] is T match)
+                {
+                    owner = match;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // =========================================================
 
         public static void Clear()
