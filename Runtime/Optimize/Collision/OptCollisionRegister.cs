@@ -1,3 +1,4 @@
+using CodeSketch.Mono;
 using UnityEngine;
 
 namespace CodeSketch.Optimize
@@ -8,7 +9,7 @@ namespace CodeSketch.Optimize
     /// - T = interface / base gameplay type
     /// - Zero GetComponent in runtime
     /// </summary>
-    public abstract class OptCollisionRegister<T> : MonoBehaviour where T : class
+    public abstract class OptCollisionRegister<T> : MonoCached where T : class
     {
         [SerializeField]
         protected Collider[] _colliders;
