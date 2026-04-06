@@ -11,8 +11,8 @@ namespace CodeSketch.Optimize
     /// </summary>
     public abstract class OptCollisionRegister<T> : MonoCached where T : class
     {
-        [SerializeField]
-        protected Collider[] _colliders;
+        [SerializeField] protected Collider[] _colliders;
+        [SerializeField] protected bool _manuallyAssignColliders = false;
 
         // =====================================================
         // LIFECYCLE
@@ -45,7 +45,7 @@ namespace CodeSketch.Optimize
         protected virtual void OnValidate()
         {
 #if UNITY_EDITOR
-            if (!Application.isPlaying)
+            if (!Application.isPlaying && !_manuallyAssignColliders)
             {
                 _colliders = GetComponentsInChildren<Collider>(true);
             }
