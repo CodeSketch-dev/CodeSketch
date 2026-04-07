@@ -45,7 +45,7 @@ namespace CodeSketch.Audio
         protected override void Start()
         {
             base.Start();
-            
+
             AudioManager.Attach(TransformCached);
 
             AudioManager.VolumeSound.OnValueChanged += VolumeSound_EventValueChanged;
@@ -86,11 +86,11 @@ namespace CodeSketch.Audio
         public void TryStop(AudioClip clip)
         {
             if (clip == null || !AudioSource.isPlaying) return;
-            
+
             if (AudioSource.clip.name.Equals(clip.name))
                 Stop();
         }
-        
+
         #endregion
 
         #region Function -> Private
@@ -99,7 +99,7 @@ namespace CodeSketch.Audio
         {
             return _config.Volume * (_config.Type == AudioType.Music ? AudioManager.VolumnMusic.Value : AudioManager.VolumeSound.Value);
         }
-        
+
         void UpdateVolume()
         {
             if (_config == null) return;
@@ -123,7 +123,7 @@ namespace CodeSketch.Audio
         {
             UpdateVolume();
         }
-        
+
         void Init(AudioConfig config, bool loop = false)
         {
             if (config == null || config.Clip == null)
@@ -131,7 +131,7 @@ namespace CodeSketch.Audio
                 CodeSketchDebug.LogWarning("[AudioScript] Invalid config or clip!");
                 return;
             }
-            
+
             if (_audioSource == null)
                 _audioSource = AudioSource;
             if (AudioSource == null) return;
@@ -143,7 +143,12 @@ namespace CodeSketch.Audio
             AudioSource.minDistance = config.EarsDistance.x;
             AudioSource.maxDistance = config.EarsDistance.y;
             AudioSource.spatialBlend = config.Mode == AudioMode.Mode3D ? 1f : 0f;
-            AudioSource.rolloffMode = AudioRolloffMode.Linear;
+
+            AudioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+
+            // Tắt bỏ logic quyết định mức độ thay đổi cao độ (pitch) khi nguồn âm hoặc AudioListener di chuyển so với nhau.
+            // Tránh trường hợp méo âm thanh
+            AudioSource.dopplerLevel = 0;
 
             AudioSource.outputAudioMixerGroup = config.Bus == AudioBus.Master ? null : AudioMixerFactory.GetGroup(config.Bus);
 
@@ -153,8 +158,8 @@ namespace CodeSketch.Audio
 
         #endregion
     }
-    
-    public static class AudioExtensions 
+
+    public static class AudioExtensions
     {
         public static void TryStop(this AudioScript audio, AudioConfig config)
         {
