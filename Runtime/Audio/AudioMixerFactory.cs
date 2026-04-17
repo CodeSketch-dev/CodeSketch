@@ -16,7 +16,7 @@ namespace CodeSketch.Audio
             public AudioBus Bus;
             public AudioMixerGroup MixerGroup;
         }
-        
+
         [SerializeField] List<BusMapper> _mappers = new();
 
         [SerializeField] AudioConfig _sfxUIButtonClick;
@@ -35,6 +35,25 @@ namespace CodeSketch.Audio
 
             CodeSketchDebug.LogWarning($"Mixer group not found for bus: {bus}");
             return null;
+        }
+
+        public static void OverrideMixer(AudioMixer mixer)
+        {
+            if (mixer == null) return;
+
+            var inst = Instance;
+            inst._lookup ??= new Dictionary<AudioBus, AudioMixerGroup>();
+
+            foreach (AudioBus bus in Enum.GetValues(typeof(AudioBus)))
+            {
+                if (bus == AudioBus.None) continue;
+
+                var groups = mixer.FindMatchingGroups(bus.ToString());
+                if (groups != null && groups.Length > 0)
+                {
+                    inst._lookup[bus] = groups[0];
+                }
+            }
         }
 
         protected override void OnInitialize()
