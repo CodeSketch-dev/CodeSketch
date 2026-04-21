@@ -65,6 +65,8 @@ namespace CodeSketch.UIView
         Sequence _sequence;
         CanvasGroup _canvasGroup;
 
+        public CanvasGroup CanvasGroup => _canvasGroup ?? (_canvasGroup = GetComponent<CanvasGroup>());
+
         public Sequence sequence => _sequence;
 
         public UnityEvent onOpenStart => _onOpenStart;
@@ -76,13 +78,13 @@ namespace CodeSketch.UIView
         public UnityEvent onHideStart => _onHideStart;
         public UnityEvent onHideEnd => _onHideEnd;
 
-        public bool interactable { get => _canvasGroup.interactable; set => _canvasGroup.interactable = value; }
+        public bool interactable { get => CanvasGroup.interactable; set => CanvasGroup.interactable = value; }
         public bool hideOnBlock => _hideOnBlock;
 
         #region MonoBehaviour
         void Awake()
         {
-            _canvasGroup = GetComponent<CanvasGroup>();
+            _canvasGroup = CanvasGroup;
         }
 
         void OnDestroy()
@@ -150,7 +152,7 @@ namespace CodeSketch.UIView
             // Active object when open (in case it hidden before)
             GameObjectCached.SetActive(true);
 
-            _canvasGroup.interactable = false;
+            CanvasGroup.interactable = false;
 
             if (_openDuration > 0.0f)
             {
@@ -171,7 +173,7 @@ namespace CodeSketch.UIView
             if (isShow) _onShowEnd?.Invoke();
             else _onOpenEnd?.Invoke();
 
-            _canvasGroup.interactable = true;
+            CanvasGroup.interactable = true;
         }
 
         async UniTask ProcessClose(bool isHiding)
@@ -186,7 +188,7 @@ namespace CodeSketch.UIView
             if (isHiding) _onHideStart?.Invoke();
             else _onCloseStart?.Invoke();
 
-            _canvasGroup.interactable = false;
+            CanvasGroup.interactable = false;
 
             if (_closeDuration > 0.0f)
             {
@@ -249,14 +251,14 @@ namespace CodeSketch.UIView
 
         public void Reveal()
         {
-            _canvasGroup.interactable = true;
+            CanvasGroup.interactable = true;
             if (_hideOnBlock)
                 ProcessOpen(true).Forget();
         }
 
         public void Block()
         {
-            _canvasGroup.interactable = false;
+            CanvasGroup.interactable = false;
             if (_hideOnBlock)
                 ProcessClose(true).Forget();
         }

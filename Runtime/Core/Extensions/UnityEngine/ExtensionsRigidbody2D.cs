@@ -65,7 +65,7 @@ namespace CodeSketch.Core.Extensions
         /// </summary>
         public static void StopMotion(this Rigidbody2D rb)
         {
-            rb.linearVelocity = Vector2.zero;
+            rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }
 
@@ -74,9 +74,9 @@ namespace CodeSketch.Core.Extensions
         /// </summary>
         public static void LimitMaxSpeed(this Rigidbody2D rb, float maxSpeed)
         {
-            if (rb.linearVelocity.sqrMagnitude > maxSpeed * maxSpeed)
+            if (rb.velocity.sqrMagnitude > maxSpeed * maxSpeed)
             {
-                rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
+                rb.velocity = rb.velocity.normalized * maxSpeed;
             }
         }
     }
