@@ -7,6 +7,7 @@ using System.Threading;
 
 using CodeSketch.Mono;
 using Cysharp.Threading.Tasks;
+using CodeSketch.Core.Async;
 
 namespace CodeSketch.UIView
 {
@@ -61,7 +62,8 @@ namespace CodeSketch.UIView
         [Tooltip("Nếu KHÔNG destroy khi Close, có set inactive không? (mặc định: không)")]
         [SerializeField] bool _setInactiveOnCloseIfNotDestroy = false;
 
-        CancellationTokenSource _cancelToken;
+        CancelToken _cancelToken;
+
         Sequence _sequence;
         CanvasGroup _canvasGroup;
 
@@ -91,7 +93,6 @@ namespace CodeSketch.UIView
         {
             // Cancel token
             _cancelToken?.Cancel();
-            _cancelToken?.Dispose();
 
             // Kill tweens
             _sequence?.Kill();
@@ -141,7 +142,7 @@ namespace CodeSketch.UIView
         {
             // Handle cancel token
             _cancelToken?.Cancel();
-            _cancelToken = new CancellationTokenSource();
+            _cancelToken = new CancelToken();
 
             ConstructSequence();
 
@@ -180,7 +181,7 @@ namespace CodeSketch.UIView
         {
             // Handle cancel token
             _cancelToken?.Cancel();
-            _cancelToken = new CancellationTokenSource();
+            _cancelToken = new CancelToken();
 
             ConstructSequence();
 
