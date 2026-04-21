@@ -11,7 +11,7 @@ using Cysharp.Threading.Tasks;
 namespace CodeSketch.UIView
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public sealed class View : MonoBase 
+    public sealed class View : MonoBase
     {
         [Title("Config")]
         [MinValue(0f)]
@@ -21,7 +21,6 @@ namespace CodeSketch.UIView
         [SerializeField] float _closeDuration = 0.1f;
 
         [FoldoutGroup("Extra", Expanded = false)]
-        [ListDrawerSettings(ListElementLabelName = "displayName")]
         [SerializeReference] ViewExtra[] _extras = Array.Empty<ViewExtra>();
 
         [FoldoutGroup("Extra")]
@@ -69,23 +68,25 @@ namespace CodeSketch.UIView
         public Sequence sequence => _sequence;
 
         public UnityEvent onOpenStart => _onOpenStart;
-        public UnityEvent onOpenEnd   => _onOpenEnd;
+        public UnityEvent onOpenEnd => _onOpenEnd;
         public UnityEvent onCloseStart => _onCloseStart;
-        public UnityEvent onCloseEnd   => _onCloseEnd;
+        public UnityEvent onCloseEnd => _onCloseEnd;
         public UnityEvent onShowStart => _onShowStart;
-        public UnityEvent onShowEnd   => _onShowEnd;
+        public UnityEvent onShowEnd => _onShowEnd;
         public UnityEvent onHideStart => _onHideStart;
-        public UnityEvent onHideEnd   => _onHideEnd;
+        public UnityEvent onHideEnd => _onHideEnd;
 
         public bool interactable { get => _canvasGroup.interactable; set => _canvasGroup.interactable = value; }
         public bool hideOnBlock => _hideOnBlock;
 
         #region MonoBehaviour
-        void Awake() {
+        void Awake()
+        {
             _canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        void OnDestroy() {
+        void OnDestroy()
+        {
             // Cancel token
             _cancelToken?.Cancel();
             _cancelToken?.Dispose();
@@ -98,26 +99,33 @@ namespace CodeSketch.UIView
         #region Private
         [FoldoutGroup("Transition")]
         [Button]
-        void GetTransitionEntities() {
+        void GetTransitionEntities()
+        {
             _transitionEntities = GetComponentsInChildren<ViewTransitionEntity>(true);
         }
 
-        void ConstructSequence() {
+        void ConstructSequence()
+        {
             if (_sequence != null)
                 return;
 
             _sequence?.Kill();
             _sequence = DOTween.Sequence();
 
-            if ((_extras == null || _extras.Length == 0) && (_transitionEntities == null || _transitionEntities.Length == 0)) {
+            if ((_extras == null || _extras.Length == 0) && (_transitionEntities == null || _transitionEntities.Length == 0))
+            {
                 _sequence.AppendInterval(1.0f);
-            } else {
-                if (_extras != null) {
+            }
+            else
+            {
+                if (_extras != null)
+                {
                     for (int i = 0; i < _extras.Length; i++)
                         _extras[i]?.Apply(this);
                 }
 
-                if (_transitionEntities != null) {
+                if (_transitionEntities != null)
+                {
                     for (int i = 0; i < _transitionEntities.Length; i++)
                         _transitionEntities[i]?.Apply(this);
                 }
@@ -127,7 +135,8 @@ namespace CodeSketch.UIView
             _sequence.SetAutoKill(false);
         }
 
-        async UniTask ProcessOpen(bool isShow) {
+        async UniTask ProcessOpen(bool isShow)
+        {
             // Handle cancel token
             _cancelToken?.Cancel();
             _cancelToken = new CancellationTokenSource();
@@ -136,14 +145,15 @@ namespace CodeSketch.UIView
 
             // Open start callback
             if (isShow) _onShowStart?.Invoke();
-            else        _onOpenStart?.Invoke();
+            else _onOpenStart?.Invoke();
 
             // Active object when open (in case it hidden before)
             GameObjectCached.SetActive(true);
 
             _canvasGroup.interactable = false;
 
-            if (_openDuration > 0.0f) {
+            if (_openDuration > 0.0f)
+            {
                 _sequence.timeScale = _openDuration > 0.0f ? 1.0f / _openDuration : 1.0f;
 
                 _sequence.Complete();
@@ -151,18 +161,21 @@ namespace CodeSketch.UIView
                 _sequence.Play();
 
                 await UniTask.WaitForSeconds(_openDuration, true, cancellationToken: _cancelToken.Token);
-            } else {
+            }
+            else
+            {
                 _sequence.Complete();
             }
 
             // Open end callback
             if (isShow) _onShowEnd?.Invoke();
-            else        _onOpenEnd?.Invoke();
+            else _onOpenEnd?.Invoke();
 
             _canvasGroup.interactable = true;
         }
 
-        async UniTask ProcessClose(bool isHiding) {
+        async UniTask ProcessClose(bool isHiding)
+        {
             // Handle cancel token
             _cancelToken?.Cancel();
             _cancelToken = new CancellationTokenSource();
@@ -171,39 +184,51 @@ namespace CodeSketch.UIView
 
             // Close start callback
             if (isHiding) _onHideStart?.Invoke();
-            else          _onCloseStart?.Invoke();
+            else _onCloseStart?.Invoke();
 
             _canvasGroup.interactable = false;
 
-            if (_closeDuration > 0.0f) {
+            if (_closeDuration > 0.0f)
+            {
                 _sequence.timeScale = _closeDuration > 0.0f ? 1.0f / _closeDuration : 1.0f;
 
                 _sequence.Complete();
                 _sequence.PlayBackwards();
 
                 await UniTask.WaitForSeconds(_closeDuration, true, cancellationToken: _cancelToken.Token);
-            } else {
+            }
+            else
+            {
                 _sequence.Rewind();
             }
 
-            if (isHiding) {
+            if (isHiding)
+            {
                 _onHideEnd?.Invoke();
 
-                if (_destroyOnHide) {
+                if (_destroyOnHide)
+                {
                     // Huỷ hẳn object sau khi hide
                     Destroy(gameObject);
                     return;
-                } else {
+                }
+                else
+                {
                     GameObjectCached.SetActive(false);
                 }
-            } else {
+            }
+            else
+            {
                 _onCloseEnd?.Invoke();
 
-                if (_destroyOnClose) {
+                if (_destroyOnClose)
+                {
                     // Huỷ hẳn object sau khi close
                     Destroy(gameObject);
                     return;
-                } else if (_setInactiveOnCloseIfNotDestroy) {
+                }
+                else if (_setInactiveOnCloseIfNotDestroy)
+                {
                     // Tuỳ chọn: nếu không destroy khi close thì tắt GameObject
                     GameObjectCached.SetActive(false);
                 }
@@ -212,21 +237,25 @@ namespace CodeSketch.UIView
         #endregion
 
         #region Public API
-        public void Open() {
+        public void Open()
+        {
             ProcessOpen(false).Forget();
         }
 
-        public void Close() {
+        public void Close()
+        {
             ProcessClose(false).Forget();
         }
 
-        public void Reveal() {
+        public void Reveal()
+        {
             _canvasGroup.interactable = true;
             if (_hideOnBlock)
                 ProcessOpen(true).Forget();
         }
 
-        public void Block() {
+        public void Block()
+        {
             _canvasGroup.interactable = false;
             if (_hideOnBlock)
                 ProcessClose(true).Forget();
