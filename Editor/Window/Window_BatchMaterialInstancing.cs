@@ -86,21 +86,44 @@ namespace CodeSketch.Editor
                     for (int i = 0; i < DragAndDrop.objectReferences.Length; i++)
                     {
                         var obj = DragAndDrop.objectReferences[i];
-                        if (obj is Material mat)
-                        {
-                            AddMaterial(mat);
-                            continue;
-                        }
+                        TryAddFromDraggedObject(obj);
+                    }
 
-                        if (obj is DefaultAsset folder)
-                        {
-                            AddMaterialsFromFolder(folder);
-                        }
+                    // Fallback for cases where Unity gives only paths for dragged folders.
+                    for (int i = 0; i < DragAndDrop.paths.Length; i++)
+                    {
+                        TryAddFromDraggedPath(DragAndDrop.paths[i]);
                     }
                 }
 
                 evt.Use();
             }
+        }
+
+        void TryAddFromDraggedObject(UnityEngine.Object obj)
+        {
+            if (obj == null)
+                return;
+
+            if (obj is Material mat)
+            {
+                AddMaterial(mat);
+                return;
+            }
+
+            string path = AssetDatabase.GetAssetPath(obj);
+            TryAddFromDraggedPath(path);
+        }
+
+        void TryAddFromDraggedPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            if (!AssetDatabase.IsValidFolder(path))
+                return;
+
+            AddMaterialsFromFolderPath(path);
         }
 
         void DrawActionSection()
@@ -222,6 +245,14 @@ namespace CodeSketch.Editor
                 return;
 
             string folderPath = AssetDatabase.GetAssetPath(folder);
+            if (string.IsNullOrEmpty(folderPath) || !AssetDatabase.IsValidFolder(folderPath))
+                return;
+
+            AddMaterialsFromFolderPath(folderPath);
+        }
+
+        void AddMaterialsFromFolderPath(string folderPath)
+        {
             if (string.IsNullOrEmpty(folderPath) || !AssetDatabase.IsValidFolder(folderPath))
                 return;
 
