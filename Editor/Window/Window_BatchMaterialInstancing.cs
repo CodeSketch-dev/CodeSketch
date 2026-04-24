@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -12,11 +11,7 @@ namespace CodeSketch.Editor
     {
         readonly List<Material> _materials = new List<Material>();
 
-        [Title("Input")]
-        [LabelText("Material")]
         Material _singleMaterial;
-
-        [LabelText("Folder")]
         DefaultAsset _folderAsset;
 
         Vector2 _scroll;
@@ -26,8 +21,8 @@ namespace CodeSketch.Editor
         [MenuItem("CodeSketch/Tools/Window/Batch Material Instancing")]
         static void Open()
         {
-            var window = GetWindow<Window_BatchMaterialInstancing>("Batch Material Instancing");
-            window.minSize = new Vector2(700f, 400f);
+            var window = GetWindow<Window_BatchMaterialInstancing>("Material Instancing Batch");
+            window.minSize = new Vector2(560f, 360f);
             window.Show();
         }
 
@@ -44,31 +39,28 @@ namespace CodeSketch.Editor
 
         void DrawAddSection()
         {
-            using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
-            {
-                EditorGUILayout.LabelField("Input", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Input", EditorStyles.boldLabel);
 
-                using (new EditorGUILayout.HorizontalScope())
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                _singleMaterial = (Material)EditorGUILayout.ObjectField("Material", _singleMaterial, typeof(Material), false);
+                using (new EditorGUI.DisabledScope(_singleMaterial == null))
                 {
-                    _singleMaterial = (Material)EditorGUILayout.ObjectField("Material", _singleMaterial, typeof(Material), false);
-                    using (new EditorGUI.DisabledScope(_singleMaterial == null))
+                    if (GUILayout.Button("Add Material", GUILayout.Width(120f)))
                     {
-                        if (GUILayout.Button("Add Material", GUILayout.Width(120f)))
-                        {
-                            AddMaterial(_singleMaterial);
-                        }
+                        AddMaterial(_singleMaterial);
                     }
                 }
+            }
 
-                using (new EditorGUILayout.HorizontalScope())
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                _folderAsset = (DefaultAsset)EditorGUILayout.ObjectField("Folder", _folderAsset, typeof(DefaultAsset), false);
+                using (new EditorGUI.DisabledScope(_folderAsset == null))
                 {
-                    _folderAsset = (DefaultAsset)EditorGUILayout.ObjectField("Folder", _folderAsset, typeof(DefaultAsset), false);
-                    using (new EditorGUI.DisabledScope(_folderAsset == null))
+                    if (GUILayout.Button("Add Folder", GUILayout.Width(120f)))
                     {
-                        if (GUILayout.Button("Add Folder", GUILayout.Width(120f)))
-                        {
-                            AddMaterialsFromFolder(_folderAsset);
-                        }
+                        AddMaterialsFromFolder(_folderAsset);
                     }
                 }
             }
@@ -213,7 +205,6 @@ namespace CodeSketch.Editor
             }
         }
 
-        [Button("Add Material")]
         void AddMaterial(Material mat)
         {
             if (mat == null)
@@ -225,7 +216,6 @@ namespace CodeSketch.Editor
             }
         }
 
-        [Button("Add Folder")]
         void AddMaterialsFromFolder(DefaultAsset folder)
         {
             if (folder == null)
@@ -274,7 +264,6 @@ namespace CodeSketch.Editor
             Debug.Log($"Batch Material Instancing: Updated {changed} material(s). Set enableInstancing = {enabled}.");
         }
 
-        [Button(ButtonSizes.Medium)]
         void ResetWindow()
         {
             _singleMaterial = null;
