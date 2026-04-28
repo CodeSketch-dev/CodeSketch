@@ -189,7 +189,8 @@ namespace CodeSketch.UIView
             if (isHiding) _onHideStart?.Invoke();
             else _onCloseStart?.Invoke();
 
-            CanvasGroup.interactable = false;
+            if (_canvasGroup)
+                CanvasGroup.interactable = false;
 
             if (_closeDuration > 0.0f)
             {
