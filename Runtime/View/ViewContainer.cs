@@ -22,14 +22,14 @@ namespace CodeSketch.UIView
         protected override void Awake()
         {
             base.Awake();
-            
+
             SceneManager.activeSceneChanged += SceneManager_ActiveSceneChanged;
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             SceneManager.activeSceneChanged -= SceneManager_ActiveSceneChanged;
         }
 
@@ -89,7 +89,7 @@ namespace CodeSketch.UIView
                 _isTransiting = false;
                 return null;
             }
-            
+
             view.GameObjectCached.SetActive(false);
 
             BlockTopView();
@@ -98,7 +98,8 @@ namespace CodeSketch.UIView
             view.onCloseStart.AddListener(PopTopView);
             view.onCloseEnd.AddListener(() =>
             {
-                Destroy(view.GameObjectCached);
+                if (view && view.GameObjectCached)
+                    Destroy(view.GameObjectCached);
 
                 // Release asset after use
                 //handle.Release();
@@ -115,7 +116,7 @@ namespace CodeSketch.UIView
 
             // Unset transiting flag
             _isTransiting = false;
-            
+
             return view;
         }
     }
