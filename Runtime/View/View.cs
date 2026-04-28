@@ -253,14 +253,16 @@ namespace CodeSketch.UIView
 
         public void Reveal()
         {
-            CanvasGroup.interactable = true;
+            if (_canvasGroup)
+                CanvasGroup.interactable = true;
             if (_hideOnBlock)
                 ProcessOpen(true).Forget();
         }
 
         public void Block()
         {
-            CanvasGroup.interactable = false;
+            if (_canvasGroup)
+                CanvasGroup.interactable = false;
             if (_hideOnBlock)
                 ProcessClose(true).Forget();
         }
