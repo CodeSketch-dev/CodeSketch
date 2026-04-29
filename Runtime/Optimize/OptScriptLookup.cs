@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace CodeSketch
+namespace CodeSketch.Optimize
 {
     public static class OptScriptLookup
     {
@@ -45,7 +45,8 @@ namespace CodeSketch
             }
         }
 
-        public static void Register<T>(T owner, Collider[] colliders) where T : MonoBehaviour
+        // Convenience params overload so callers can pass multiple colliders inline
+        public static void Register<T>(T owner, params Collider[] colliders) where T : MonoBehaviour
         {
             if (owner == null || colliders == null)
                 return;
@@ -80,7 +81,8 @@ namespace CodeSketch
             }
         }
 
-        public static void Unregister<T>(T owner, Collider[] colliders) where T : MonoBehaviour
+        // Convenience params overload so callers can pass multiple colliders inline
+        public static void Unregister<T>(T owner, params Collider[] colliders) where T : MonoBehaviour
         {
             if (owner == null || colliders == null)
                 return;
