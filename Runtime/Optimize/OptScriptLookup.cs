@@ -11,9 +11,18 @@ namespace CodeSketch.Optimize
         const int MaxPooledLists = 512;
         static readonly object _sync = new object();
 
-        static OptScriptLookup()
+        // Initialize runtime subscriptions in a Unity-safe timing window.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void InitOnRuntimeLoad()
         {
-            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            // Subscribe to sceneUnloaded so we clear registrations for the old scene
+            // before the new scene's GameObjects run their OnEnable.
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+        }
+
+        static void OnSceneUnloaded(Scene scene)
+        {
+            Clear();
         }
 
         static void OnActiveSceneChanged(Scene oldScene, Scene newScene)
