@@ -156,6 +156,21 @@ namespace CodeSketch.Patterns.Pool
             return ins && s_PendingInstances.Contains(ins.GameObjectCached);
         }
 
+        internal static void NotifyDestroyed(PoolPrefabItem ins)
+        {
+            if (!ins) return;
+
+            var instance = ins.GameObjectCached;
+            if (!instance) return;
+
+            PoolReleaseScheduler.Cancel(ins);
+
+            s_PendingInstances.Remove(instance);
+            s_Released.Remove(instance);
+            s_Actives.Remove(instance);
+            _cache.Remove(instance);
+        }
+
         internal static void MarkAsReleased(PoolPrefabItem ins)
         {
             if (!ins) return;

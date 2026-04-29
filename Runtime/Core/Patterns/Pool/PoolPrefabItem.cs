@@ -43,6 +43,7 @@ namespace CodeSketch.Patterns.Pool
         protected virtual void OnDestroy()
         {
             TryUnsubscribe();
+            PoolPrefabGlobal.NotifyDestroyed(this);
         }
 
         protected override void Start()
