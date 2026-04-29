@@ -19,10 +19,10 @@ namespace CodeSketch.Patterns.Pool
 
         protected virtual void Awake()
         {
-            if (_config != null)
-            {
-                Pooler.Attach(this);
-            }
+            // if (_config != null)
+            // {
+            //     Pooler.Attach(this);
+            // }
 
             GetCachedInterfaces<IPoolRelease>();
             GetCachedInterfaces<IPoolReleaseAync>();
