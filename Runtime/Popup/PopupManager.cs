@@ -23,7 +23,7 @@ namespace CodeSketch.UIPopup
                 {
                     var all = Object.FindObjectsOfType<Canvas>();
                     if (all == null) return null;
-                    
+
                     EventRootUndefine?.Invoke();
                     if (!_root) return _root;
 
@@ -35,14 +35,14 @@ namespace CodeSketch.UIPopup
                         if (canvas && canvas.renderMode == RenderMode.ScreenSpaceOverlay)
                         {
                             rootSetter = canvas.GetComponentInChildren<PopupRootSetter>();
-                            
+
                             if (selected == null)
                             {
                                 if (canvas.enabled)
                                 {
                                     selected = canvas;
                                 }
-                                
+
                                 if (rootSetter == null)
                                 {
                                     selected = null;
@@ -55,17 +55,17 @@ namespace CodeSketch.UIPopup
                                     selected = null;
                                     continue;
                                 }
-                                
+
                                 if (selected.sortingOrder < canvas.sortingOrder && canvas.enabled) selected = canvas;
                             }
                         }
                     }
 
                     if (rootSetter) _root = rootSetter.transform;
-                    
+
                     if (!_root && selected)
                         _root = selected.transform;
-                    
+
                 }
 
                 return _root;
@@ -119,13 +119,13 @@ namespace CodeSketch.UIPopup
         public static Popup Create(GameObject prefab)
         {
             if (_root == null) EventRootUndefine?.Invoke();
-            
+
             Popup popup = prefab.Create(_root != null ? _root : Root, false).GetComponent<Popup>();
             popup.TransformCached.SetAsLastSibling();
 
             return popup;
         }
-        
+
         public static Popup Create(GameObject prefab, Transform specifiedRoot)
         {
             Popup popup = prefab.Create(specifiedRoot, false).GetComponent<Popup>();
@@ -134,9 +134,10 @@ namespace CodeSketch.UIPopup
             return popup;
         }
 
-        public static void SetRoot(Transform target)
+        public static void SetRoot(Transform target, bool force = false)
         {
-            _root = target;
+            if (_root == null || force)
+                _root = target;
         }
     }
 }
