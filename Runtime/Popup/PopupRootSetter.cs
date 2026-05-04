@@ -4,9 +4,7 @@ namespace CodeSketch.UIPopup
 {
     public class PopupRootSetter : MonoBehaviour
     {
-        [SerializeField] bool _setupOnEnable = true;
-        
-        void Awake()
+        void Start()
         {
             PopupManager.SetRoot(transform);
             PopupManager.EventRootUndefine += OnRootUndefine;
@@ -15,14 +13,6 @@ namespace CodeSketch.UIPopup
         void OnDestroy()
         {
             PopupManager.EventRootUndefine -= OnRootUndefine;
-        }
-
-        void OnEnable()
-        {
-            if (_setupOnEnable)
-            {
-                PopupManager.SetRoot(transform);
-            }
         }
 
         void OnRootUndefine()
