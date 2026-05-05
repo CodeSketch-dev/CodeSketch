@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CodeSketch.Patterns.Pool
 {
-    public class PoolAutoReleaseParticle : MonoBase
+    public class PoolAutoReleaseParticle : MonoCached
     {
         [SerializeField] ParticleSystem _particle;
         [SerializeField] PoolPrefabConfig _pool;
@@ -21,22 +21,18 @@ namespace CodeSketch.Patterns.Pool
             _tween.Stop();
         }
 
-        protected override void Awake()
+        protected virtual void Awake()
         {
-            base.Awake();
             _cachedOnDestructable = OnDestructable;
         }
 
-        protected override void OnDisable()
+        protected virtual void OnDisable()
         {
-            base.OnDisable();
             OnCompleted?.Invoke();
         }
 
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
-
             ParticleSystem.MainModule particleMain = _particle.main;
             particleMain.playOnAwake = false;
 
