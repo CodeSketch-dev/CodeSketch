@@ -12,6 +12,8 @@ namespace CodeSketch.Patterns.Pool
 
         Tween _tween;
 
+        ParticleSystem.MainModule _main;
+
         public Action OnCompleted;
         Action _cachedOnDestructable;
 
@@ -33,14 +35,14 @@ namespace CodeSketch.Patterns.Pool
 
         protected virtual void OnEnable()
         {
-            ParticleSystem.MainModule particleMain = _particle.main;
-            particleMain.playOnAwake = false;
+            _main = _particle.main;
+            _main.playOnAwake = false;
 
             _particle.Play();
             _tween.Stop();
 
-            float duration = _particle != null ? _particle.main.duration : 0f;
-            _tween = Tween.Delay(duration, _cachedOnDestructable);
+            float duration = _main.duration;
+            _tween = Tween.Delay(duration, _cachedOnDestructable, false, false);
         }
 
         void OnDestructable()
