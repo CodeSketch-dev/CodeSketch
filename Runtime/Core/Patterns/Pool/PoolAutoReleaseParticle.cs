@@ -13,11 +13,18 @@ namespace CodeSketch.Patterns.Pool
         Tween _tween;
 
         public Action OnCompleted;
+        Action _cachedOnDestructable;
 
         void OnDestroy()
         {
             OnCompleted?.Invoke();
             _tween.Stop();
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            _cachedOnDestructable = OnDestructable;
         }
 
         protected override void OnDisable()
@@ -28,16 +35,16 @@ namespace CodeSketch.Patterns.Pool
 
         protected override void OnEnable()
         {
-             base.OnEnable();
-             
+            base.OnEnable();
+
             ParticleSystem.MainModule particleMain = _particle.main;
             particleMain.playOnAwake = false;
-            
+
             _particle.Play();
             _tween.Stop();
 
             float duration = _particle != null ? _particle.main.duration : 0f;
-            _tween = Tween.Delay(duration, OnDestructable);
+            _tween = Tween.Delay(duration, _cachedOnDestructable);
         }
 
         void OnDestructable()

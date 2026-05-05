@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CodeSketch.Mono
@@ -7,6 +8,11 @@ namespace CodeSketch.Mono
         GameObject _gameObject;
         Transform _transform;
         RectTransform _rectTransform;
+
+        Action _cachedTick;
+        Action _cachedLateTick;
+        Action _cachedFixedTick;
+        bool _tickRegistered;
 
         bool _isStarted = false;
 
@@ -20,7 +26,7 @@ namespace CodeSketch.Mono
                 return _transform;
             }
         }
-        
+
         public RectTransform RectTransformCached
         {
             get
@@ -55,7 +61,7 @@ namespace CodeSketch.Mono
         {
             if (!_isStarted)
                 return;
-            
+
             UnregisterTick();
         }
 
@@ -68,19 +74,39 @@ namespace CodeSketch.Mono
 
         void RegisterTick()
         {
-            MonoCallback.SafeInstance.EventUpdate += Tick;
-            MonoCallback.SafeInstance.EventLateUpdate += LateTick;
-            MonoCallback.SafeInstance.EventFixedUpdate += FixedTick;
+            if (_tickRegistered) return;
+
+            if (_cachedTick == null) _cachedTick = Tick;
+            if (_cachedLateTick == null) _cachedLateTick = LateTick;
+            if (_cachedFixedTick == null) _cachedFixedTick = FixedTick;
+
+            MonoCallback.SafeInstance.EventUpdate += _cachedTick;
+            MonoCallback.SafeInstance.EventLateUpdate += _cachedLateTick;
+            MonoCallback.SafeInstance.EventFixedUpdate += _cachedFixedTick;
+
+            _tickRegistered = true;
         }
 
         void UnregisterTick()
         {
+            if (!_tickRegistered) return;
+
             if (MonoCallback.IsDestroyed)
                 return;
-            
-            MonoCallback.Instance.EventUpdate -= Tick;
-            MonoCallback.Instance.EventLateUpdate -= LateTick;
-            MonoCallback.Instance.EventFixedUpdate -= FixedTick;
+
+            MonoCallback.Instance.EventUpdate -= _cachedTick;
+            MonoCallback.Instance.EventLateUpdate -= _cachedLateTick;
+            MonoCallback.Instance.EventFixedUpdate -= _cachedFixedTick;
+
+            _tickRegistered = false;
+        }
+
+        protected virtual void Awake()
+        {
+            // Cache delegates to avoid per-enable allocations
+            _cachedTick = Tick;
+            _cachedLateTick = LateTick;
+            _cachedFixedTick = FixedTick;
         }
 
         protected virtual void Tick()
