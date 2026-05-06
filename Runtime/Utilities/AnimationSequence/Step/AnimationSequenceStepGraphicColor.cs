@@ -8,11 +8,11 @@ namespace CodeSketch.Utilities.Animations
 {
     public class AnimationSequenceStepGraphicColor : AnimationSequenceStepAction<Graphic>
     {
-        [SerializeField] readonly Color _value = Color.white;
+        [SerializeField] Color _value = Color.white;
 
         [SerializeField]
         [ShowIf("@_changeStartValue")]
-        readonly Color _valueStart = Color.white;
+        Color _valueStart = Color.white;
 
         public override string displayName => $"{(_isSelf ? "Graphic (This)" : _owner)}: DOColor";
 
