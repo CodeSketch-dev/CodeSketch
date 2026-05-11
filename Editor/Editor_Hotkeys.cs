@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using System.IO;
 
 [InitializeOnLoad]
 public static class Editor_Hotkeys
@@ -53,6 +54,66 @@ public static class Editor_Hotkeys
         {
             EditorSceneManager.OpenScene(path);
             Debug.Log($"✅ Đã mở scene: {path}");
+        }
+    }
+
+    // Shift + S: Open scene picker window with scrollable list
+    [MenuItem("Tools/⚙QuickScene/Open Scene List #s", false, int.MaxValue)]
+    static void OpenSceneListWindow() => QuickSceneWindow.ShowWindow();
+
+    class QuickSceneWindow : EditorWindow
+    {
+        Vector2 scroll;
+
+        public static void ShowWindow()
+        {
+            var w = GetWindow<QuickSceneWindow>(true, "Quick Scenes", true);
+            w.minSize = new Vector2(300, 200);
+            w.Focus();
+        }
+
+        void OnGUI()
+        {
+            var scenes = EditorBuildSettings.scenes;
+            if (scenes == null || scenes.Length == 0)
+            {
+                EditorGUILayout.HelpBox("Build Settings hiện không có scene nào. Vào File > Build Settings... để thêm.", MessageType.Info);
+                if (GUILayout.Button("Open Build Settings")) EditorApplication.ExecuteMenuItem("File/Build Settings...");
+                return;
+            }
+
+            EditorGUILayout.LabelField($"Scenes in Build Settings ({scenes.Length})", EditorStyles.boldLabel);
+            scroll = EditorGUILayout.BeginScrollView(scroll);
+            for (int i = 0; i < scenes.Length; i++)
+            {
+                var s = scenes[i];
+                string name = Path.GetFileNameWithoutExtension(s.path);
+                EditorGUILayout.BeginHorizontal();
+                if (!s.enabled)
+                {
+                    GUI.color = Color.gray;
+                }
+                if (GUILayout.Button($"[{i}] {name}", GUILayout.Height(22)))
+                {
+                    if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                    {
+                        EditorSceneManager.OpenScene(s.path);
+                        Close();
+                    }
+                }
+                GUI.color = Color.white;
+
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.LabelField(s.enabled ? "Enabled" : "Disabled", GUILayout.Width(70));
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUILayout.EndScrollView();
+
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Refresh")) Repaint();
+            if (GUILayout.Button("Open Build Settings")) EditorApplication.ExecuteMenuItem("File/Build Settings...");
+            EditorGUILayout.EndHorizontal();
         }
     }
 }
