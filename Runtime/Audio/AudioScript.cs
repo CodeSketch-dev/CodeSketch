@@ -37,6 +37,8 @@ namespace CodeSketch.Audio
         {
             if (_audioSource == null)
                 _audioSource = GetComponent<AudioSource>();
+
+            AudioManager.Attach(transform);
         }
 
         private void OnDestroy()
