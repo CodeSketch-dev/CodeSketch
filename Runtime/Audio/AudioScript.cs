@@ -38,8 +38,9 @@ namespace CodeSketch.Audio
             if (_audioSource == null)
                 _audioSource = GetComponent<AudioSource>();
 
-            AudioManager.Attach(transform);
             AudioManager.EventStopAll += EventStopAll;
+
+            AudioManager.Attach(transform);
         }
 
         private void OnDestroy()
@@ -108,7 +109,6 @@ namespace CodeSketch.Audio
         void EventStopAll(AudioType type)
         {
             if (_config == null) return;
-
             if (_config.Type == type && AudioSource.isPlaying)
                 Stop();
         }
