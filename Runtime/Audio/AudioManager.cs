@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CodeSketch.Data;
 using CodeSketch.Diagnostics;
 using CodeSketch.Mono;
+using System;
 
 namespace CodeSketch.Audio
 {
@@ -15,16 +16,18 @@ namespace CodeSketch.Audio
         public static readonly DataValue<float> VolumeSound = new DataValue<float>(1.0f);
 
         public static readonly HashSet<AudioScript> HashsetActives = new HashSet<AudioScript>(); // Lưu trữ các AudioScript đang active
-        
+
         ObjectPool<AudioScript> _pool;
         public static ObjectPool<AudioScript> Pool => SafeInstance._pool;
+
+        public static event Action<AudioType> EventStopAll;
 
         #region MonoBehaviour
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             InitPool();
         }
 
@@ -44,7 +47,7 @@ namespace CodeSketch.Audio
 
             return audio;
         }
-        
+
         public static AudioScript Play(AudioConfig config, Vector3 position, bool loop = false)
         {
             if (config == null || config.Clip == null) return null;
@@ -57,6 +60,16 @@ namespace CodeSketch.Audio
             HashsetActives.Add(audio);
 
             return audio;
+        }
+
+        public static void StopAllSound()
+        {
+            EventStopAll?.Invoke(AudioType.Sound);
+        }
+
+        public static void StopAllMusic()
+        {
+            EventStopAll?.Invoke(AudioType.Music);
         }
 
         public static void ReturnPool(AudioScript audio)
@@ -82,7 +95,7 @@ namespace CodeSketch.Audio
         void InitPool()
         {
             if (Pool != null) return;
-            
+
             _pool = new ObjectPool<AudioScript>(
                 createFunc: () =>
                 {

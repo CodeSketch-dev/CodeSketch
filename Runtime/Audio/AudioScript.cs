@@ -39,12 +39,15 @@ namespace CodeSketch.Audio
                 _audioSource = GetComponent<AudioSource>();
 
             AudioManager.Attach(transform);
+            AudioManager.EventStopAll += EventStopAll;
         }
 
         private void OnDestroy()
         {
             _tweendelay.Stop();
             _tweenVolume.Stop();
+
+            AudioManager.EventStopAll -= EventStopAll;
 
             if (!AudioManager.HasInstance)
                 return;
@@ -101,6 +104,14 @@ namespace CodeSketch.Audio
         #endregion
 
         #region Function -> Private
+
+        void EventStopAll(AudioType type)
+        {
+            if (_config == null) return;
+
+            if (_config.Type == type && AudioSource.isPlaying)
+                Stop();
+        }
 
         float GetVolume()
         {
