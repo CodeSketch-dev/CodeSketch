@@ -6,7 +6,7 @@ using CodeSketch.Mono;
 
 namespace CodeSketch.Audio
 {
-    public class AudioScript : MonoBase
+    public class AudioScript : MonoCached
     {
         #region Properties
 
@@ -14,6 +14,7 @@ namespace CodeSketch.Audio
         AudioSource _audioSource;
 
         Tween _tweendelay;
+        Tween _tweenVolume;
 
         public AudioConfig Config => _config;
 
@@ -34,22 +35,26 @@ namespace CodeSketch.Audio
 
         void Awake()
         {
-            _audioSource = AudioSource;
+            if (_audioSource == null)
+                _audioSource = GetComponent<AudioSource>();
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             _tweendelay.Stop();
-        }
+            _tweenVolume.Stop();
 
-        protected override void Start()
-        {
-            base.Start();
-
-            AudioManager.Attach(TransformCached);
+            if (!AudioManager.HasInstance)
+                return;
 
             AudioManager.VolumeSound.OnValueChanged += VolumeSound_EventValueChanged;
             AudioManager.VolumnMusic.OnValueChanged += VolumeMusic_EventValueChanged;
+        }
+
+        void OnDisable()
+        {
+            _tweendelay.Stop();
+            _tweenVolume.Stop();
         }
 
         #endregion
@@ -63,7 +68,7 @@ namespace CodeSketch.Audio
             _tweendelay.Stop();
 
             if (!loop)
-                _tweendelay = Tween.Delay(config.Clip.length, Stop);
+                _tweendelay = Tween.Delay(config.Clip.length, Stop, false, false);
         }
 
         public void Stop()
@@ -72,6 +77,7 @@ namespace CodeSketch.Audio
                 return;
 
             _tweendelay.Stop();
+            _tweenVolume.Stop();
             AudioSource.Stop();
 
             AudioManager.ReturnPool(this);
@@ -79,15 +85,14 @@ namespace CodeSketch.Audio
 
         public void TryStop(AudioConfig config)
         {
-            if (!config) return;
+            if (config == null) return;
             TryStop(config.Clip);
         }
 
         public void TryStop(AudioClip clip)
         {
             if (clip == null || !AudioSource.isPlaying) return;
-
-            if (AudioSource.clip.name.Equals(clip.name))
+            if (AudioSource.clip == clip)
                 Stop();
         }
 
@@ -110,7 +115,8 @@ namespace CodeSketch.Audio
             if (Mathf.Approximately(AudioSource.volume, volume))
                 return;
 
-            Tween.AudioVolume(AudioSource, volume, 0.1f);
+            _tweenVolume.Stop();
+            _tweenVolume = Tween.AudioVolume(AudioSource, volume, 0.1f);
         }
 
 
@@ -169,9 +175,8 @@ namespace CodeSketch.Audio
 
         public static bool IsClip(this AudioScript audio, AudioConfig config)
         {
-            if (audio == null || config == null || audio.AudioSource.clip == null) return false;
-            if (audio.AudioSource.clip.name.Equals(config.Clip.name)) return true;
-            return false;
+            if (audio == null || config == null || audio.AudioSource.clip == null || config.Clip == null) return false;
+            return audio.AudioSource.clip == config.Clip;
         }
     }
 }
