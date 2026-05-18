@@ -38,6 +38,8 @@ namespace CodeSketch.Audio
             if (_audioSource == null)
                 _audioSource = GetComponent<AudioSource>();
 
+            AudioManager.VolumeSound.OnValueChanged += VolumeSound_EventValueChanged;
+            AudioManager.VolumnMusic.OnValueChanged += VolumeMusic_EventValueChanged;
             AudioManager.EventStopAll += EventStopAll;
 
             AudioManager.Attach(transform);
@@ -53,8 +55,8 @@ namespace CodeSketch.Audio
             if (!AudioManager.HasInstance)
                 return;
 
-            AudioManager.VolumeSound.OnValueChanged += VolumeSound_EventValueChanged;
-            AudioManager.VolumnMusic.OnValueChanged += VolumeMusic_EventValueChanged;
+            AudioManager.VolumeSound.OnValueChanged -= VolumeSound_EventValueChanged;
+            AudioManager.VolumnMusic.OnValueChanged -= VolumeMusic_EventValueChanged;
         }
 
         void OnDisable()
