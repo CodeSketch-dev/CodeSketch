@@ -40,6 +40,7 @@ namespace CodeSketch.Audio
 
             AudioManager.VolumeSound.OnValueChanged += VolumeSound_EventValueChanged;
             AudioManager.VolumnMusic.OnValueChanged += VolumeMusic_EventValueChanged;
+
             AudioManager.EventStopAll += EventStopAll;
 
             AudioManager.Attach(transform);
