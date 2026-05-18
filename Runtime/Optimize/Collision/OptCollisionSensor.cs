@@ -14,7 +14,7 @@ namespace CodeSketch.Optimize
     /// - Hỗ trợ 1 collider → nhiều T
     /// - An toàn với pooling / enable-disable
     /// </summary>
-    public abstract class OptCollisionSensor<T> : MonoBase
+    public abstract class OptCollisionSensor<T> : MonoCached
         where T : class
     {
         // ==================== COLLISION ====================

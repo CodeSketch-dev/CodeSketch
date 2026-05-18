@@ -1,15 +1,16 @@
-using CodeSketch.Core;
+using System;
+using CodeSketch.Mono;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using CodeSketch.Mono;
-
 namespace CodeSketch.Patterns.Pool
 {
-    public class PoolPrefabItem : MonoBaseOpt
+    public class PoolPrefabItem : MonoCachedOpt
     {
         [Header("Config")]
         [SerializeField] PoolPrefabConfig _config;
+
+        Action<Scene, Scene> _cachedReleaseAction;
 
         public PoolPrefabConfig Config
         {
@@ -19,24 +20,17 @@ namespace CodeSketch.Patterns.Pool
 
         protected virtual void Awake()
         {
-            // if (_config != null)
-            // {
-            //     Pooler.Attach(this);
-            // }
-
             GetCachedInterfaces<IPoolRelease>();
             GetCachedInterfaces<IPoolReleaseAync>();
         }
 
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
             TrySubscribe();
         }
 
-        protected override void OnDisable()
+        protected virtual void OnDisable()
         {
-            base.OnDisable();
             TryUnsubscribe();
         }
 
@@ -46,27 +40,26 @@ namespace CodeSketch.Patterns.Pool
             PoolPrefabGlobal.NotifyDestroyed(this);
         }
 
-        protected override void Start()
+        protected virtual void Start()
         {
-            base.Start();
             TrySubscribe(); // phòng trường hợp OnEnable chưa kịp
         }
 
         void TrySubscribe()
         {
-            var cb = CodeSketch.Mono.MonoCallback.HasInstance ? CodeSketch.Mono.MonoCallback.Instance : null;
-            if (cb != null)
+            if (_cachedReleaseAction == null) _cachedReleaseAction = MonoCallback_EventActiveSceneChanged;
+
+            if (MonoCallback.HasInstance)
             {
-                cb.EventActiveSceneChanged += MonoCallback_EventActiveSceneChanged;
+                MonoCallback.Instance.EventActiveSceneChanged += _cachedReleaseAction;
             }
         }
 
         void TryUnsubscribe()
         {
-            var cb = CodeSketch.Mono.MonoCallback.HasInstance ? CodeSketch.Mono.MonoCallback.Instance : null;
-            if (cb != null)
+            if (MonoCallback.HasInstance)
             {
-                cb.EventActiveSceneChanged -= MonoCallback_EventActiveSceneChanged;
+                MonoCallback.Instance.EventActiveSceneChanged -= _cachedReleaseAction;
             }
         }
 
