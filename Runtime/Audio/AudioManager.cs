@@ -62,14 +62,9 @@ namespace CodeSketch.Audio
             return audio;
         }
 
-        public static void StopAllSound()
+        public static void ForceStopAll(AudioType type)
         {
-            EventStopAll?.Invoke(AudioType.Sound);
-        }
-
-        public static void StopAllMusic()
-        {
-            EventStopAll?.Invoke(AudioType.Music);
+            EventStopAll?.Invoke(type);
         }
 
         public static void ReturnPool(AudioScript audio)
