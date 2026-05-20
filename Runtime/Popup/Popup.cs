@@ -11,10 +11,10 @@ using CodeSketch.Mono;
 namespace CodeSketch.UIPopup
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public class Popup : MonoBase
+    public class Popup : MonoCached
     {
         [SerializeField, HideInInspector] CanvasGroup _canvasGroup;
-        
+
         [Title("Config")]
         [SerializeField, Min(0.01f)] float _openDuration = 0.1f;
         [SerializeField, Min(0.01f)] float _closeDuration = 0.1f;
@@ -46,7 +46,7 @@ namespace CodeSketch.UIPopup
 
         public float OpenDuration => _openDuration;
         public float CloseDuration => _closeDuration;
-        
+
         public bool IgnoreTimeScale => _ignoreTimeScale;
 
         public CanvasGroup CanvasGroup
@@ -84,11 +84,9 @@ namespace CodeSketch.UIPopup
             if (_isEnabled)
                 InputCheck();
         }
-        
-        protected override void OnEnable()
+
+        protected void OnEnable()
         {
-            base.OnEnable();
-            
             PopupManager.PushToStack(this);
 
             _isOpening = true;
@@ -103,10 +101,8 @@ namespace CodeSketch.UIPopup
             _sequence.Play();
         }
 
-        protected override void OnDisable()
+        protected void OnDisable()
         {
-            base.OnDisable();
-            
             // Pop this popup out of stack
             PopupManager.PopFromStack(this);
 
@@ -161,7 +157,7 @@ namespace CodeSketch.UIPopup
             }
 
             _sequence.SetUpdate(_ignoreTimeScale);
-            
+
             _sequence.OnStepComplete(Sequence_OnStepComplete);
             _sequence.OnRewind(Sequence_OnRewind);
 
@@ -193,7 +189,7 @@ namespace CodeSketch.UIPopup
             _onCloseStart?.Invoke();
 
             Play_Sfx_Close();         // 🔊 Phát ngay trước khi PlayBackwards()
-    
+
             if (_openDuration > 0f && _closeDuration > 0f)
                 _sequence.timeScale = _openDuration / _closeDuration;
 
@@ -205,12 +201,12 @@ namespace CodeSketch.UIPopup
                 _sequence.Complete();
             }
         }
-        
+
         void Play_Sfx_Open()
         {
             if (_sfxOpen) AudioManager.Play(_sfxOpen);
         }
-        
+
         void Play_Sfx_Close()
         {
             if (_sfxClose) AudioManager.Play(_sfxClose);

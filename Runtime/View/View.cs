@@ -12,7 +12,7 @@ using CodeSketch.Core.Async;
 namespace CodeSketch.UIView
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public sealed class View : MonoBase
+    public sealed class View : MonoCached
     {
         [Title("Config")]
         [MinValue(0f)]
