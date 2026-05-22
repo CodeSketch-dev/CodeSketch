@@ -14,6 +14,17 @@ namespace CodeSketch.UIPopup
         static readonly List<Popup> _mainStack = new List<Popup>();
 
         static Transform _root;
+        static Canvas _canvas;
+
+        public static Canvas Canvas
+        {
+            get
+            {
+                if (_canvas == null) _ = Root;
+
+                return _canvas;
+            }
+        }
 
         public static Transform Root
         {
@@ -61,10 +72,17 @@ namespace CodeSketch.UIPopup
                         }
                     }
 
-                    if (rootSetter) _root = rootSetter.transform;
+                    if (rootSetter)
+                    {
+                        _root = rootSetter.transform;
+                        _canvas = rootSetter.GetComponentInParent<Canvas>();
+                    }
 
                     if (!_root && selected)
+                    {
                         _root = selected.transform;
+                        _canvas = selected;
+                    }
 
                 }
 
@@ -137,7 +155,10 @@ namespace CodeSketch.UIPopup
         public static void SetRoot(Transform target, bool force = false)
         {
             if (_root == null || force)
+            {
                 _root = target;
+                _canvas = target ? target.GetComponentInParent<Canvas>() : null;
+            }
         }
     }
 }
