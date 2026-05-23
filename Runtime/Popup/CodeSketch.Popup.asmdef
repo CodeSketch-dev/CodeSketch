@@ -2,9 +2,9 @@
     "name": "CodeSketch.Popup",
     "rootNamespace": "CodeSketch.UIPopup",
     "references": [
-        "GUID:4a406af209b8747498480304eba12888",
-        "GUID:3d4087713781216488c62ec1352c15ec",
-        "GUID:6c5aba480c1076d459c1e12388da974d"
+        "CodeSketch",
+        "CodeSketch.Audio",
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
