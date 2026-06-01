@@ -2,8 +2,8 @@
     "name": "CodeSketch.Data",
     "rootNamespace": "CodeSketch.Data",
     "references": [
-        "GUID:4a406af209b8747498480304eba12888",
-        "GUID:da9c79e8b051f687d32e68604d4b7b22"
+        "CodeSketch",
+        "OdinSerializer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
