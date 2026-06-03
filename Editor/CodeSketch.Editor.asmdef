@@ -2,9 +2,9 @@
     "name": "CodeSketch.Editor",
     "rootNamespace": "CodeSketch.Editor",
     "references": [
-        "GUID:4a406af209b8747498480304eba12888",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:c58fabe3685b0688bdf24882e545078b"
+        "CodeSketch",
+        "UniTask",
+        "OdinSerializer"
     ],
     "includePlatforms": [
         "Editor"
