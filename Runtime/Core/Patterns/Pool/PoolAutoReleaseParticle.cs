@@ -19,25 +19,27 @@ namespace CodeSketch.Patterns.Pool
 
         void OnDestroy()
         {
-            OnCompleted?.Invoke();
             _tween.Stop();
         }
 
         protected virtual void Awake()
         {
             _cachedOnDestructable = OnDestructable;
+            if (_particle == null) _particle = GetComponentInChildren<ParticleSystem>();
+            if (_particle == null) return;
+            _main = _particle.main;
+            _main.playOnAwake = false;
         }
 
         protected virtual void OnDisable()
         {
             OnCompleted?.Invoke();
+            OnCompleted = null;
         }
 
         protected virtual void OnEnable()
         {
-            _main = _particle.main;
-            _main.playOnAwake = false;
-
+            if (_particle == null) return;
             _particle.Play();
             _tween.Stop();
 
