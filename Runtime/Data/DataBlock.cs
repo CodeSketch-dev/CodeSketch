@@ -1,18 +1,10 @@
 using System;
 using CodeSketch.Mono;
 
-#if CODESKETCH_MEMORYPACK
-using MemoryPack;
-#endif
-
 namespace CodeSketch.Data
 {
-    #if CODESKETCH_MEMORYPACK
-    [MemoryPackable]
-    #else 
     [Serializable]
-    #endif
-    public partial class DataBlock<T> where T : DataBlock<T>
+    public class DataBlock<T> where T : DataBlock<T>
     {
         static T s_instance;
 
@@ -36,15 +28,13 @@ namespace CodeSketch.Data
 
         protected virtual void Init()
         {
-            MonoCallback.SafeInstance.EventApplicationPause += MonoCallback_ApplicationOnPause;
-            MonoCallback.SafeInstance.EventApplicationQuit += MonoCallback_ApplicationOnQuit;
-            MonoCallback.SafeInstance.EventApplicationFocus += MonoCAllback_EventApplicationFocus;
-        }
-
-        void MonoCAllback_EventApplicationFocus(bool isFocus)
-        {
-            if (!isFocus)
-                Save();
+            // Trên Android, OnApplicationPause(true) LUÔN fire khi app rời foreground
+            // (Home / vuốt tắt / khoá màn hình / hệ thống kill) -> đây là điểm lưu đáng tin duy nhất.
+            // OnApplicationQuit chỉ fire ở một số máy (back thoát hẳn) -> giữ thêm cho chắc.
+            // KHÔNG subscribe OnApplicationFocus: nó fire cả khi KHÔNG thực sự thoát
+            // (kéo notification, dialog xin quyền, ad overlay...) -> gây ghi đĩa thừa lúc pause (ANR).
+            MonoSingleton<MonoCallback>.SafeInstance.EventApplicationPause += MonoCallback_ApplicationOnPause;
+            MonoSingleton<MonoCallback>.SafeInstance.EventApplicationQuit += MonoCallback_ApplicationOnQuit;
         }
 
         void MonoCallback_ApplicationOnQuit()
@@ -66,7 +56,6 @@ namespace CodeSketch.Data
         public static void Delete()
         {
             s_instance = null;
-
             DataFileHandler.DeleteInDevice(typeof(T).ToString());
         }
     }
