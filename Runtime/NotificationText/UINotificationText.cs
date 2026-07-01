@@ -47,14 +47,14 @@ namespace CodeSketch.Notifications
             _sequence.Stop();
         }
 
-        public void Show(string msg)
+        public void Show(string msg, float displayDuration = -1f)
         {
             _txtMain.text = msg;
 
-            InitSequence();
+            InitSequence(displayDuration >= 0f ? displayDuration : _fadeOutDelay);
         }
 
-        void InitSequence()
+        void InitSequence(float displayDuration)
         {
             _sequence.Stop(); // Stop any existing sequence
 
@@ -78,7 +78,7 @@ namespace CodeSketch.Notifications
                 .Group(Tween.Scale(_target, scaleFactor, _scaleDuration, _scaleEase))
                 .Group(Tween.Alpha(_canvasGroup, 0f, 1f, _fadeInDuration))
                 .Group(Tween.UIAnchoredPositionY(_target, startPos.y, endY, _moveDuration, _moveEase))
-                .ChainDelay(_fadeOutDelay)
+                .ChainDelay(displayDuration)
                 .Chain(Tween.Alpha(_canvasGroup, 1f, 0f, _fadeOutDuration))
                 .OnComplete(OnComplete, false);
         }
@@ -88,7 +88,7 @@ namespace CodeSketch.Notifications
             GameObjectCached.SetActive(false);
         }
 
-        public static void Push(string msg)
+        public static void Push(string msg, float displayDuration = -1f)
         {
             if (_poolIndex >= _pool.Length)
                 _poolIndex = 0;
@@ -101,7 +101,7 @@ namespace CodeSketch.Notifications
             _pool[_poolIndex].TransformCached.SetParent(PopupManager.Root, false);
             _pool[_poolIndex].TransformCached.SetAsLastSibling();
             _pool[_poolIndex].GameObjectCached.SetActive(true);
-            _pool[_poolIndex].Show(msg);
+            _pool[_poolIndex].Show(msg, displayDuration);
 
             _poolIndex++;
         }
