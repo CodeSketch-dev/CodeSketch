@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using CodeSketch.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeSketch.Utilities.Utils
 {
     /// <summary>
     /// Compact number formatting & parsing utilities.
-    /// Supports infinite units: K M B T aa ab ... zz aaa ...
+    /// Supports infinite units: K M B T a b c ... z aa ab ... zz aaa ...
     /// Case-insensitive parsing, stable for idle games.
     /// </summary>
     public static class UtilsNumber
@@ -163,7 +164,7 @@ namespace CodeSketch.Utilities.Utils
             }
 
             string numberPart = val.Substring(0, letterIndex);
-            string unitPart   = val.Substring(letterIndex).Trim();
+            string unitPart = val.Substring(letterIndex).Trim();
 
             if (!double.TryParse(numberPart, NumberStyles.Float, CultureInvariant, out var baseValue))
             {
@@ -180,10 +181,10 @@ namespace CodeSketch.Utilities.Utils
             if (string.IsNullOrEmpty(unit))
                 return 1;
 
-            // Normalize
             unit = unit.Trim();
 
-            // Single-letter units (K M B T)
+            // Single-letter units:
+            // K M B T a b c ... z
             if (unit.Length == 1)
             {
                 return char.ToUpperInvariant(unit[0]) switch
@@ -192,17 +193,23 @@ namespace CodeSketch.Utilities.Utils
                     'M' => 1_000_000d,
                     'B' => 1_000_000_000d,
                     'T' => 1_000_000_000_000d,
-                    _   => 1
+                    _ when unit[0] >= 'a' && unit[0] <= 'z' => Math.Pow(1000d, 5 + (unit[0] - 'a')),
+                    _ when unit[0] >= 'A' && unit[0] <= 'Z' => Math.Pow(1000d, 5 + (unit[0] - 'A')),
+                    _ => 1
                 };
             }
 
-            // Extended units: aa, ab, zz, aaa...
-            int powerIndex = FromExtendedUnit(unit.ToLowerInvariant()) + BaseUnits.Length;
-            return Math.Pow(1000, powerIndex);
+            // Extended units:
+            // aa, ab, ... zz, aaa ...
+            int extendedIndex = FromExtendedUnit(unit.ToLowerInvariant());
+            if (extendedIndex < 0)
+                return 1;
+
+            return Math.Pow(1000d, 5 + extendedIndex);
         }
 
         // =====================================================
-        // EXTENDED UNIT (aa, ab, ... aaa ...)
+        // EXTENDED UNIT (a, b, ... z, aa, ab, ... aaa ...)
         // =====================================================
 
         static string ToExtendedUnit(int index)
@@ -221,14 +228,16 @@ namespace CodeSketch.Utilities.Utils
         static int FromExtendedUnit(string unit)
         {
             int result = 0;
+
             foreach (char c in unit)
             {
                 int v = c - 'a';
                 if (v < 0 || v > 25)
-                    return 0;
+                    return -1;
 
                 result = result * 26 + v + 1;
             }
+
             return result - 1;
         }
 
