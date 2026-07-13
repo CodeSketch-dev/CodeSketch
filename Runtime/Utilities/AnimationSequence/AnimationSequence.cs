@@ -156,6 +156,8 @@ namespace CodeSketch.Utilities.Animations
             _sequence.SetDelay(_delay);
 
             _sequence.SetUpdate(_updateType, _isIndependentUpdate);
+
+            _sequence.Pause();
         }
 
         [ButtonGroup(Order = -1, ButtonHeight = 25)]
