@@ -109,10 +109,8 @@ namespace CodeSketch.Utilities.Animations
         protected override void OnEnable()
         {
             base.OnEnable();
-            
-            // If no action flagged on enable, we shouldn't init sequence
-            if(_actionOnEnable != 0)
-                InitSequence();
+
+            InitSequence();
 
             if (_actionOnEnable.HasFlag(ActionOnEnable.Complete))
                 _sequence?.Complete();
@@ -130,7 +128,7 @@ namespace CodeSketch.Utilities.Animations
         protected override void OnDisable()
         {
             base.OnDisable();
-            
+
             if (_actionOnDisable.HasFlag(ActionOnDisable.Pause))
                 _sequence?.Pause();
 
@@ -199,7 +197,7 @@ namespace CodeSketch.Utilities.Animations
         {
             _sequence?.Pause();
         }
-        
+
 #if UNITY_EDITOR
 
         [ButtonGroup]
