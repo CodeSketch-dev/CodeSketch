@@ -53,14 +53,16 @@ namespace CodeSketch.Utilities.Utils
 
         public static string Format(double value, int decimalDigits = 2)
         {
-            if (value < MinValueFormat)
+            if (Math.Abs(value) < MinValueFormat)
                 return ((long)value).ToString(CultureInvariant);
 
-            int unitIndex = 0;
+            int sign = value < 0 ? -1 : 1;
+            double magnitude = Math.Abs(value);
 
-            while (value >= 1000.0)
+            int unitIndex = 0;
+            while (magnitude >= 1000.0)
             {
-                value /= 1000.0;
+                magnitude /= 1000.0;
                 unitIndex++;
             }
 
@@ -68,8 +70,8 @@ namespace CodeSketch.Utilities.Utils
                 ? BaseUnits[unitIndex]
                 : ToExtendedUnit(unitIndex - BaseUnits.Length);
 
-            return value.ToString(
-                       $"0.{new string('#', decimalDigits)}",
+            return (magnitude * sign).ToString(
+                       DecimalFormat(decimalDigits),
                        CultureInvariant
                    ) + unit;
         }
@@ -80,16 +82,19 @@ namespace CodeSketch.Utilities.Utils
 
         public static string FormatVN(double value, int decimalDigits = 2)
         {
-            if (value < MinValueFormat)
+            if (Math.Abs(value) < MinValueFormat)
             {
-                string format = "0." + new string('#', decimalDigits);
+                string format = DecimalFormat(decimalDigits);
                 return Math.Round(value, decimalDigits).ToString(format, CultureVN_Dot);
             }
 
+            int sign = value < 0 ? -1 : 1;
+            double magnitude = Math.Abs(value);
+
             int unitIndex = 0;
-            while (value >= 1000.0)
+            while (magnitude >= 1000.0)
             {
-                value /= 1000.0;
+                magnitude /= 1000.0;
                 unitIndex++;
             }
 
@@ -97,23 +102,23 @@ namespace CodeSketch.Utilities.Utils
                 ? BaseUnits[unitIndex]
                 : ToExtendedUnit(unitIndex - BaseUnits.Length);
 
-            string compact = value
-                .ToString($"F{decimalDigits}", CultureInvariant)
-                .TrimEnd('0')
-                .TrimEnd('.');
-
-            return compact + unit;
+            // Dùng placeholder '#' thay vì "F{digits}" + TrimEnd('0'): TrimEnd ăn luôn số 0
+            // ở cuối phần nguyên khi không có dấu thập phân (vd decimalDigits=0: "400" -> "4").
+            return (magnitude * sign).ToString(DecimalFormat(decimalDigits), CultureInvariant) + unit;
         }
 
         public static string FormatVN_CompactRounded(double value, int decimalDigits = 2)
         {
-            if (value < MinValueFormat)
+            if (Math.Abs(value) < MinValueFormat)
                 return Math.Round(value).ToString("N0", CultureVN_Dot);
 
+            int sign = value < 0 ? -1 : 1;
+            double magnitude = Math.Abs(value);
+
             int unitIndex = 0;
-            while (value >= 1000.0)
+            while (magnitude >= 1000.0)
             {
-                value /= 1000.0;
+                magnitude /= 1000.0;
                 unitIndex++;
             }
 
@@ -121,12 +126,19 @@ namespace CodeSketch.Utilities.Utils
                 ? BaseUnits[unitIndex]
                 : ToExtendedUnit(unitIndex - BaseUnits.Length);
 
-            string compact = value
-                .ToString($"F{decimalDigits}", CultureInvariant)
-                .TrimEnd('0')
-                .TrimEnd('.');
+            // Cùng lý do như FormatVN: placeholder '#' giữ nguyên số 0 ở phần nguyên,
+            // chỉ bỏ số 0 thừa ở phần thập phân.
+            return (magnitude * sign).ToString(DecimalFormat(decimalDigits), CultureInvariant) + unit;
+        }
 
-            return compact + unit;
+        // Format string dùng '0' cho phần nguyên (luôn giữ) và '#' cho phần thập phân
+        // (tự bỏ số 0 thừa, không đụng tới phần nguyên) -> thay thế an toàn cho "F{digits}"+TrimEnd.
+        static string DecimalFormat(int decimalDigits)
+        {
+            if (decimalDigits < 0) decimalDigits = 0;
+            return decimalDigits > 0
+                ? "0." + new string('#', decimalDigits)
+                : "0";
         }
 
         // =====================================================
