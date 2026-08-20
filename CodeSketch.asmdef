@@ -9,7 +9,8 @@
         "Unity.ResourceManager",
         "Taptic",
         "StompyRobot.SRDebugger",
-        "PrimeTween.Runtime"
+        "PrimeTween.Runtime",
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
