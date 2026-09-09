@@ -25,6 +25,8 @@
             }
         }
 
+        public float maxWidth { get; }
+
         public float preferredWidth
         {
             get
@@ -60,6 +62,8 @@
                 return LayoutUtility.GetFlexibleHeight(CopySource.rectTransform) + Padding.y;
             }
         }
+
+        public float maxHeight { get; }
 
         public float preferredHeight
         {

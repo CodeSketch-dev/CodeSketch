@@ -26,6 +26,8 @@
         public float PaddingPreferredHeight;
         public float PaddingPreferredWidth;
 
+        public float maxWidth { get; }
+
         public float preferredWidth
         {
             get
@@ -37,6 +39,8 @@
                 return LayoutUtility.GetPreferredWidth(CopySource) + PaddingPreferredWidth;
             }
         }
+
+        public float maxHeight { get; }
 
         public float preferredHeight
         {
