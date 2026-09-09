@@ -1,6 +1,4 @@
-#if CODESKETCH_MEMORYPACK
-using MemoryPack;
-#elif CODESKETCH_ODINSERIALIZER
+#if DATA_ODINSERIALIZER
 using OdinSerializer;
 #else
 using System.IO;
@@ -11,17 +9,7 @@ namespace CodeSketch.Data
 {
     public static class DataSerializer
     {
-#if CODESKETCH_MEMORYPACK
-        public static byte[] Serialize<T>(T data) where T : class
-        {
-            return MemoryPackSerializer.Serialize<T>(data);
-        }
-
-        public static T Deserialize<T>(byte[] data) where T : class
-        {
-            return MemoryPackSerializer.Deserialize<T>(data);
-        }
-#elif CODESKETCH_ODINSERIALIZER
+#if DATA_ODINSERIALIZER
         public static byte[] Serialize<T>(T data) where T : class
         {
             return SerializationUtility.SerializeValue(data, DataFormat.Binary);

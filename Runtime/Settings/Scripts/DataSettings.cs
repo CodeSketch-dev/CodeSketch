@@ -1,17 +1,9 @@
 using CodeSketch.Data;
 using UnityEngine;
 
-#if CODESKETCH_MEMORYPACK
-using MemoryPack;
-#endif
-
 namespace CodeSketch.Settings
 {
-#if CODESKETCH_MEMORYPACK
-    [MemoryPackable]
-#else
     [System.Serializable]
-#endif
     public partial class DataSettings : DataBlock<DataSettings>
     {
         [SerializeField] DataValue<float> _soundVolume;
