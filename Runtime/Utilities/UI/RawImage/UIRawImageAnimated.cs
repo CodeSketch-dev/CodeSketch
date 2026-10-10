@@ -2,17 +2,21 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
-using SketchEngine.Mono;
 
-namespace SketchEngine.Utilities.UI
+using CodeSketch.Mono;
+
+namespace CodeSketch.Utilities.UI
 {
-    public class UIRawImageAnimated : MonoCached
+    public class UIRawImageAnimated : MonoBase
     {
+        [Header("Config")]
         [SerializeField] Texture[] _frames;
 
         [Min(1)]
         [SerializeField] int _fps = 30;
+
         [SerializeField] int _loopCount = 0;
+
         [ShowIf("@_loopCount < 0")]
         [SerializeField] LoopType _loopType;
 
@@ -20,7 +24,7 @@ namespace SketchEngine.Utilities.UI
 
         Sequence _sequence;
 
-        public Sequence Sequence
+        public Sequence sequence
         {
             get
             {
@@ -30,21 +34,12 @@ namespace SketchEngine.Utilities.UI
             }
         }
 
-        RawImage RawImage
-        {
-            get
-            {
-                if (_rawImage == null)
-                    _rawImage = GetComponentInChildren<RawImage>();
-                return _rawImage;
-            }
-        }
-
         #region MonoBehaviour
 
         void Awake()
         {
-            if (_rawImage == null) _rawImage = RawImage;
+            _rawImage = GetComponentInChildren<RawImage>();
+
             InitSequence();
         }
 
@@ -53,14 +48,18 @@ namespace SketchEngine.Utilities.UI
             _sequence?.Kill();
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             _sequence?.Restart();
             _sequence?.Play();
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
+            
             _sequence?.Pause();
         }
 
@@ -90,11 +89,6 @@ namespace SketchEngine.Utilities.UI
         void SetFrame(int frameIndex)
         {
             _rawImage.texture = _frames[frameIndex];
-        }
-
-        void OnValidate()
-        {
-            if (_rawImage == null) _rawImage = RawImage;
         }
     }
 }

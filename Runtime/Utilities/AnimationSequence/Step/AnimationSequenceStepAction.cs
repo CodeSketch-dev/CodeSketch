@@ -2,7 +2,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace SketchEngine.Utilities.Animations
+namespace CodeSketch.Utilities.Animations
 {
     public abstract class AnimationSequenceStepAction<T> : AnimationSequenceStep where T : class
     {
@@ -65,13 +65,13 @@ namespace SketchEngine.Utilities.Animations
                 switch (_addType)
                 {
                     case AddType.Append:
-                        animationSequence.Sequence.Append(GetResetTween(animationSequence));
+                        animationSequence.sequence.Append(GetResetTween(animationSequence));
                         break;
                     case AddType.Join:
-                        animationSequence.Sequence.Join(GetResetTween(animationSequence));
+                        animationSequence.sequence.Join(GetResetTween(animationSequence));
                         break;
                     case AddType.Insert:
-                        animationSequence.Sequence.Insert(_insertTime, GetResetTween(animationSequence));
+                        animationSequence.sequence.Insert(_insertTime, GetResetTween(animationSequence));
                         break;
                 }
             }
@@ -85,13 +85,13 @@ namespace SketchEngine.Utilities.Animations
             switch (_addType)
             {
                 case AddType.Append:
-                    animationSequence.Sequence.Append(tween);
+                    animationSequence.sequence.Append(tween);
                     break;
                 case AddType.Join:
-                    animationSequence.Sequence.Join(tween);
+                    animationSequence.sequence.Join(tween);
                     break;
                 case AddType.Insert:
-                    animationSequence.Sequence.Insert(_insertTime, tween);
+                    animationSequence.sequence.Insert(_insertTime, tween);
                     break;
             }
         }

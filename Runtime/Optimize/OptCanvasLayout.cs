@@ -1,9 +1,9 @@
-using SketchEngine.Core.Async;
+using CodeSketch.Core.Async;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SketchEngine.Optimize
+namespace CodeSketch.Optimize
 {
     public class OptCanvasLayout : MonoBehaviour
     {

@@ -1,12 +1,12 @@
 using UnityEngine;
 
-namespace SketchEngine.Utilities.Text
+namespace CodeSketch.Utilities.Text
 {
     public class UITextTimeCountdownHMS : UITextTimeCountdown
     {
-        [SerializeField] string _format;
+        [SerializeField] string _textFormat;
 
-        static readonly string FORMAT = "{0:00}:{1:00}:{2:00}";
+        static readonly string s_format = "{0:00}:{1:00}:{2:00}";
 
         protected override void UpdateTimeDisplay(float timeToDisplay)
         {
@@ -14,7 +14,7 @@ namespace SketchEngine.Utilities.Text
 
             if (timeToDisplay == 0f)
             {
-                Text.text = string.Format(FORMAT, 0, 0, 0);
+                Text.text = string.Format(s_format, 0, 0, 0);
                 return;
             }
 
@@ -24,10 +24,10 @@ namespace SketchEngine.Utilities.Text
             int minutes = Mathf.FloorToInt((timeToDisplay - hours * 3600f) / 60f);
             int seconds = Mathf.FloorToInt(timeToDisplay % 60f);
 
-            if (!string.IsNullOrEmpty(_format))
-                Text.text = string.Format(_format, hours, minutes, seconds);
+            if (!string.IsNullOrEmpty(_textFormat))
+                Text.text = string.Format(_textFormat, hours, minutes, seconds);
             else
-                Text.text = string.Format(FORMAT, hours, minutes, seconds);
+                Text.text = string.Format(s_format, hours, minutes, seconds);
         }
     }
 }

@@ -1,50 +1,57 @@
+using CodeSketch.Mono;
 using UnityEngine;
 
-namespace SketchEngine.Utilities.Auto
+namespace CodeSketch.Utilities.Auto
 {
-    public class AutoSpawnObject : MonoBehaviour
+    public class AutoSpawnObject : MonoBase
     {
         [SerializeField] GameObject _prefab;
         [SerializeField] float _spawnTime = 4f;
         [SerializeField] bool _spawnAtStart = true;
 
-        GameObject _spawned;
+         GameObject _ins;
 
-        float _timer;
+         float _timer;
 
-        void Awake()
+         void Awake()
+         {
+             _timer = _spawnTime;
+             
+             if (_spawnAtStart)
+             {
+                 SpawnTheItem();
+             }
+         }
+
+         protected override void FixedTick()
+         {
+             base.FixedTick();
+             
+             if (!_ins)
+             {
+                 _timer -= Time.deltaTime;
+                 if (_timer <= 0)
+                 {
+                     _timer = _spawnTime;
+                     SpawnTheItem();
+                 }
+             }
+         }
+
+        public void SpawnTheItem()
         {
-            _timer = _spawnTime;
-
-            if (_spawnAtStart)
+            if (_ins)
             {
-                Spawn();
-            }
-        }
-
-        void FixedUpdate()
-        {
-            if (!_spawned)
-            {
-                _timer -= Time.deltaTime;
-                if (_timer <= 0)
-                {
-                    _timer = _spawnTime;
-                    Spawn();
-                }
-            }
-        }
-
-        public void Spawn()
-        {
-            if (_spawned)
-            {
-                Destroy(_spawned);
+                Destroy(_ins);
             }
 
             if (_prefab)
             {
-                _spawned = Instantiate(_prefab, transform.position, transform.rotation);
+                _ins = Instantiate(_prefab, TransformCached.position, TransformCached.rotation);
+            }
+            else
+            {
+                Debug.LogWarning("Please add a item to spawn.");
             }
         }
     }

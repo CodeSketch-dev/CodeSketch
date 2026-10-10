@@ -2,20 +2,20 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
     /// <summary>
     /// UITouchDetector
     /// 
-    /// Mục đích:
-    /// - Phát hiện thống nhất các sự kiện con trỏ và cảm ứng
-    /// - Hỗ trợ chuột và cảm ứng một điểm chạm
-    /// - Ngăn xung đột khi có nhiều điểm chạm
+    /// Purpose:
+    /// - Unified pointer/touch event detector
+    /// - Supports mouse + single-touch
+    /// - Prevents multi-touch conflict
     ///
-    /// Trường hợp sử dụng phổ biến:
-    /// - Nút giao diện tùy chỉnh
-    /// - Cần điều khiển ảo
-    /// - Kéo phần tử giao diện
+    /// Typical usage:
+    /// - Custom UI buttons
+    /// - Virtual joystick
+    /// - Drag UI element
     /// </summary>
     public sealed class UITouchDetector :
         MonoBehaviour,
@@ -29,55 +29,55 @@ namespace SketchEngine.Utilities.UI
         IEndDragHandler
     {
         /// <summary>
-        /// ID của con trỏ đang hoạt động, dùng chung cho tất cả bộ phát hiện.
+        /// Global active pointer id (shared across all detectors).
         /// </summary>
-        static int ACTIVE_POINTER_ID = int.MinValue;
+        static int s_activePointerId = int.MinValue;
 
         bool _isDragging;
 
         // =====================================================
-        // SỰ KIỆN
+        // EVENTS
         // =====================================================
 
-        public event Action<PointerEventData> EventPointerClick;
-        public event Action<PointerEventData> EventPointerDown;
-        public event Action<PointerEventData> EventPointerUp;
+        public event Action<PointerEventData> eventPointerClick;
+        public event Action<PointerEventData> eventPointerDown;
+        public event Action<PointerEventData> eventPointerUp;
 
-        public event Action<PointerEventData> EventPointerEnter;
-        public event Action<PointerEventData> EventPointerExit;
+        public event Action<PointerEventData> eventPointerEnter;
+        public event Action<PointerEventData> eventPointerExit;
 
-        public event Action<PointerEventData> EventBeginDrag;
-        public event Action<PointerEventData> EventDrag;
-        public event Action<PointerEventData> EventEndDrag;
+        public event Action<PointerEventData> eventBeginDrag;
+        public event Action<PointerEventData> eventDrag;
+        public event Action<PointerEventData> eventEndDrag;
 
         // =====================================================
-        // CON TRỎ
+        // POINTER
         // =====================================================
 
         public void OnPointerDown(PointerEventData eventData)
         {
 #if !UNITY_EDITOR
-            // Một con trỏ khác đã chiếm quyền xử lý
-            if (ACTIVE_POINTER_ID != int.MinValue)
+            // Already captured by another pointer
+            if (s_activePointerId != int.MinValue)
                 return;
 
-            ACTIVE_POINTER_ID = eventData.pointerId;
+            s_activePointerId = eventData.pointerId;
 #endif
             _isDragging = false;
-            EventPointerDown?.Invoke(eventData);
+            eventPointerDown?.Invoke(eventData);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
 #if !UNITY_EDITOR
-            // Bỏ qua nếu con trỏ không có quyền xử lý
-            if (eventData.pointerId != ACTIVE_POINTER_ID)
+            // Ignore if not owner
+            if (eventData.pointerId != s_activePointerId)
                 return;
 
-            ACTIVE_POINTER_ID = int.MinValue;
+            s_activePointerId = int.MinValue;
 #endif
             _isDragging = false;
-            EventPointerUp?.Invoke(eventData);
+            eventPointerUp?.Invoke(eventData);
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -85,50 +85,50 @@ namespace SketchEngine.Utilities.UI
             if (_isDragging)
                 return;
 
-            EventPointerClick?.Invoke(eventData);
+            eventPointerClick?.Invoke(eventData);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            EventPointerEnter?.Invoke(eventData);
+            eventPointerEnter?.Invoke(eventData);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            EventPointerExit?.Invoke(eventData);
+            eventPointerExit?.Invoke(eventData);
         }
 
         // =====================================================
-        // KÉO
+        // DRAG
         // =====================================================
 
         public void OnBeginDrag(PointerEventData eventData)
         {
 #if !UNITY_EDITOR
-            if (eventData.pointerId != ACTIVE_POINTER_ID)
+            if (eventData.pointerId != s_activePointerId)
                 return;
 #endif
             _isDragging = true;
-            EventBeginDrag?.Invoke(eventData);
+            eventBeginDrag?.Invoke(eventData);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
 #if !UNITY_EDITOR
-            if (eventData.pointerId != ACTIVE_POINTER_ID)
+            if (eventData.pointerId != s_activePointerId)
                 return;
 #endif
-            EventDrag?.Invoke(eventData);
+            eventDrag?.Invoke(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
 #if !UNITY_EDITOR
-            if (eventData.pointerId != ACTIVE_POINTER_ID)
+            if (eventData.pointerId != s_activePointerId)
                 return;
 #endif
             _isDragging = false;
-            EventEndDrag?.Invoke(eventData);
+            eventEndDrag?.Invoke(eventData);
         }
     }
 }

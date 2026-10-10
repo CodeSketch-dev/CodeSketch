@@ -1,7 +1,7 @@
-using SketchEngine.Diagnostics;
+using CodeSketch.Diagnostics;
 using UnityEngine;
 
-namespace SketchEngine.Core.Extensions
+namespace CodeSketch.Core.Extensions
 {
     /// <summary>
     /// Các hàm mở rộng hỗ trợ thao tác với Sprite
@@ -49,9 +49,9 @@ namespace SketchEngine.Core.Extensions
         /// </summary>
         public static void GetUVs(this Sprite sprite, ref Vector2 uv0, ref Vector2 uvSize)
         {
-            if (sprite == null || sprite.texture == null)
+            if (sprite == null)
             {
-                SketchDebug.LogError("Can't get uvs, sprite or its texture is null");
+                CodeSketchDebug.LogError("Can't get uvs, sprite is null");
                 return;
             }
 

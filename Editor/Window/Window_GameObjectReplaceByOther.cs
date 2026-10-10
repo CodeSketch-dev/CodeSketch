@@ -2,19 +2,23 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace SketchEngine.Editor
+namespace CodeSketch.Editor
 {
-    public class Window_GameObjectReplaceByOther : SketchToolTab
+    public class Window_GameObjectReplaceByOther : EditorWindow
     {
-        public override string Title => "GameObject Replace By Other";
-
         readonly List<GameObject> objectsToCloneFrom = new(); // Danh sách các object cần clone
         
         GameObject _parentObject; // GameObject cha
         GameObject _prefabToClone; // Prefab cần clone
         Vector2 _scrollPosition; // Vị trí scroll
 
-        public override void OnGUI()
+        [MenuItem("CodeSketch/Tools/Window/GameObject Replace By Other")]
+        public static void ShowWindow()
+        {
+            GetWindow<Window_GameObjectReplaceByOther>("GameObject Replace By Other");
+        }
+
+        void OnGUI()
         {
             GUILayout.Label("Select Parent Object", EditorStyles.boldLabel);
             _parentObject = (GameObject)EditorGUILayout.ObjectField("Spawn To", _parentObject, typeof(GameObject), true);

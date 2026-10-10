@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SketchEngine.Patterns.ChainOfResponsibility
+namespace CodeSketch.Patterns.ChainOfResponsibility
 {
     public class ChainManager<T>
     {

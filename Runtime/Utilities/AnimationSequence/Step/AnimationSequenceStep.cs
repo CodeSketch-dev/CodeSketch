@@ -1,6 +1,6 @@
 using System;
 
-namespace SketchEngine.Utilities.Animations
+namespace CodeSketch.Utilities.Animations
 {
     [Serializable]
     public abstract class AnimationSequenceStep

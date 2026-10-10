@@ -1,10 +1,10 @@
-using SketchEngine.Core.Extensions;
+using CodeSketch.Core.Extensions;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SketchEngine.Utilities.Animations
+namespace CodeSketch.Utilities.Animations
 {
     public class AnimationSequenceStepGraphicColor : AnimationSequenceStepAction<Graphic>
     {
@@ -18,7 +18,7 @@ namespace SketchEngine.Utilities.Animations
 
         protected override Tween GetTween(AnimationSequence animationSequence)
         {
-            Graphic owner = _isSelf ? animationSequence.Graphic : _owner;
+            Graphic owner = _isSelf ? animationSequence.graphic : _owner;
 
             float duration = _isSpeedBased ? Mathf.Abs(_value.Magnitude() - owner.color.Magnitude()) / _duration : _duration;
             Color start = _changeStartValue ? _valueStart : owner.color;
@@ -34,7 +34,7 @@ namespace SketchEngine.Utilities.Animations
 
         protected override Tween GetResetTween(AnimationSequence animationSequence)
         {
-            Graphic owner = _isSelf ? animationSequence.Graphic : _owner;
+            Graphic owner = _isSelf ? animationSequence.graphic : _owner;
 
             return owner.DOColor(owner.color, 0.0f);
         }

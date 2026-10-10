@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SketchEngine.Core.Extensions
+namespace CodeSketch.Core.Extensions
 {
     public static class ExtensionsCollider
     {
@@ -23,8 +23,7 @@ namespace SketchEngine.Core.Extensions
             }
 
             target.isTrigger = source.isTrigger;
-            // sharedMaterial: không tạo bản sao material (material sẽ tạo instance mới và rò rỉ).
-            target.sharedMaterial = source.sharedMaterial;
+            target.material = source.material;
 
             switch (source)
             {

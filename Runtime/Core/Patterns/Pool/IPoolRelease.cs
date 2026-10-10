@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace SketchEngine.Patterns.Pool
+namespace CodeSketch.Patterns.Pool
 {
     // Đối tượng hỗ trợ dọn dẹp trước khi trả về pool.
     interface IPoolRelease

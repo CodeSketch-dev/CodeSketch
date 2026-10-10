@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SketchEngine.Optimize
+namespace CodeSketch.Optimize
 {
     public static class OptScriptLookup
     {

@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace SketchEngine.Utilities.Animations
+namespace CodeSketch.Utilities.Animations
 {
     public class AnimationSequenceStepRectTransformAnchorPos : AnimationSequenceStepRectTransform
     {
@@ -9,7 +9,7 @@ namespace SketchEngine.Utilities.Animations
 
         protected override Tween GetTween(AnimationSequence animationSequence)
         {
-            RectTransform owner = _isSelf ? animationSequence.RectTransformCached : _owner;
+            RectTransform owner = _isSelf ? animationSequence.rectTransform : _owner;
 
             float duration = _isSpeedBased ? Vector2.Distance(_value, owner.anchoredPosition) / _duration : _duration;
             Vector3 start = _changeStartValue ? _valueStart : owner.anchoredPosition;
@@ -17,6 +17,7 @@ namespace SketchEngine.Utilities.Animations
 
             Tween tween = owner.DOAnchorPos(end, duration, _snapping)
                                .ChangeStartValue(start);
+
             owner.anchoredPosition = end;
 
             return tween;
@@ -24,7 +25,8 @@ namespace SketchEngine.Utilities.Animations
 
         protected override Tween GetResetTween(AnimationSequence animationSequence)
         {
-            RectTransform owner = _isSelf ? animationSequence.RectTransformCached : _owner;
+            RectTransform owner = _isSelf ? animationSequence.rectTransform : _owner;
+
             return owner.DOAnchorPos(owner.anchoredPosition, 0.0f);
         }
     }

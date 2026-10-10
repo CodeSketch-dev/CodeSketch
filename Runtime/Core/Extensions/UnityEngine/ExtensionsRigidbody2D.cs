@@ -1,21 +1,12 @@
 using UnityEngine;
 
-namespace SketchEngine.Core.Extensions
+namespace CodeSketch.Core.Extensions
 {
     /// <summary>
     /// Extension methods tiện ích cho Rigidbody2D
     /// </summary>
     public static class ExtensionsRigidbody2D
     {
-        // Unity 6 đổi Rigidbody2D.velocity thành linearVelocity. Bản thấp hơn vẫn dùng velocity.
-#if UNITY_6000_0_OR_NEWER
-        static Vector2 GetLinearVelocity(Rigidbody2D rb) => rb.linearVelocity;
-        static void SetLinearVelocity(Rigidbody2D rb, Vector2 value) => rb.linearVelocity = value;
-#else
-        static Vector2 GetLinearVelocity(Rigidbody2D rb) => rb.velocity;
-        static void SetLinearVelocity(Rigidbody2D rb, Vector2 value) => rb.velocity = value;
-#endif
-
         /// <summary>
         /// Mô phỏng lực nổ (explosion force) áp dụng lên Rigidbody2D tại vị trí nhất định
         /// </summary>
@@ -74,7 +65,7 @@ namespace SketchEngine.Core.Extensions
         /// </summary>
         public static void StopMotion(this Rigidbody2D rb)
         {
-            SetLinearVelocity(rb, Vector2.zero);
+            rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }
 
@@ -83,10 +74,9 @@ namespace SketchEngine.Core.Extensions
         /// </summary>
         public static void LimitMaxSpeed(this Rigidbody2D rb, float maxSpeed)
         {
-            Vector2 velocity = GetLinearVelocity(rb);
-            if (velocity.sqrMagnitude > maxSpeed * maxSpeed)
+            if (rb.velocity.sqrMagnitude > maxSpeed * maxSpeed)
             {
-                SetLinearVelocity(rb, velocity.normalized * maxSpeed);
+                rb.velocity = rb.velocity.normalized * maxSpeed;
             }
         }
     }

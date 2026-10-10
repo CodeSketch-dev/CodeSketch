@@ -1,6 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace SketchEngine.Mono
+namespace CodeSketch.Mono
 {
     public class MonoCached : MonoBehaviour
     {
@@ -40,19 +42,16 @@ namespace SketchEngine.Mono
             }
         }
 
-        public virtual void Tick()
+        protected virtual void Tick()
         {
-            // For Override
         }
 
-        public virtual void LateTick()
+        protected virtual void LateTick()
         {
-            // For Override
         }
 
-        public virtual void FixedTick()
+        protected virtual void FixedTick()
         {
-            // For Override
         }
     }
 }

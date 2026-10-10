@@ -1,18 +1,22 @@
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using UnityEngine;
 
-namespace SketchEngine.Optimize
+namespace CodeSketch.Optimize
 {
     /// <summary>
-    /// Kế thừa class này rồi implement bất kỳ số interface nào (ICharacterCollidable, IMonsterCollidable, ...).
-    /// Object tự đăng ký collider vào bảng chung lúc bật, và tự gỡ lúc tắt. Không generic, không giới hạn số type.
+    /// Base class:
+    /// - Auto register colliders to OptCollisionLookup
+    /// - T = interface / base gameplay type that the concrete subclass implements
+    /// - Zero GetComponent in runtime
     /// </summary>
-    public abstract class OptCollisionRegister : MonoCached
+    public abstract class OptCollisionRegister<T> : MonoCached where T : class
     {
         [SerializeField] protected Collider[] _colliders;
         [SerializeField] protected bool _manuallyAssignColliders = false;
 
-        int[] _colliderIds;
+        // =====================================================
+        // LIFECYCLE
+        // =====================================================
 
         protected virtual void Awake()
         {
@@ -23,12 +27,13 @@ namespace SketchEngine.Optimize
         protected virtual void OnEnable()
         {
             if (_colliders == null || _colliders.Length == 0) return;
-            _colliderIds = OptCollisionLookup.Register(this, _colliders, _colliderIds);
+            OptCollisionLookup.Register<T>((T)(object)this, _colliders);
         }
 
         protected virtual void OnDisable()
         {
-            OptCollisionLookup.Unregister(this, _colliderIds);
+            if (_colliders == null || _colliders.Length == 0) return;
+            OptCollisionLookup.Unregister<T>((T)(object)this, _colliders);
         }
 
         protected virtual void OnValidate()

@@ -2,7 +2,7 @@ using System;
 using System.Security.Cryptography;
 using UnityEngine;
 
-namespace SketchEngine.Core.Extensions.CSharp
+namespace CodeSketch.Core.Extensions.CSharp
 {
     public static class ExtensionsArray
     {

@@ -1,4 +1,4 @@
-namespace SketchEngine.Patterns.StateSystem
+namespace CodeSketch.Patterns.StateSystem
 {
     public interface IStateMachine
     {

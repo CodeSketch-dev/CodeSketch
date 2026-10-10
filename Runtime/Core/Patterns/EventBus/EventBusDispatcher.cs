@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SketchEngine.Patterns.Observer
+namespace CodeSketch.Patterns.Observer
 {
     static class EventBusDispatcher<T> where T : IEvent
     {

@@ -4,12 +4,10 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SketchEngine.Editor
+namespace CodeSketch.Editor
 {
-    public class Window_FindGameObjectWithMissingComponents : SketchToolTab
+    public class Window_FindGameObjectWithMissingComponents : EditorWindow
     {
-        public override string Title => "Missing Components";
-
         enum SearchScope
         {
             ActiveScene,
@@ -27,25 +25,24 @@ namespace SketchEngine.Editor
         int previewMissingCount;
 
         GUIStyle _boxStyle;
-        GUIStyle _rowStyle;
 
-        readonly List<(GameObject go, int count)> _found = new List<(GameObject, int)>();
-        Vector2 _foundScroll;
+        [MenuItem("CodeSketch/Tools/Window/Find Missing Components")]
+        public static void ShowWindow()
+        {
+            GetWindow<Window_FindGameObjectWithMissingComponents>(
+                "Missing Components"
+            );
+        }
 
-        public override void OnEnable()
+        void OnEnable()
         {
             _boxStyle = new GUIStyle(EditorStyles.helpBox)
             {
                 padding = new RectOffset(10, 10, 8, 8)
             };
-
-            _rowStyle = new GUIStyle(GUI.skin.button)
-            {
-                alignment = TextAnchor.MiddleLeft
-            };
         }
 
-        public override void OnGUI()
+        void OnGUI()
         {
             DrawHeader();
             DrawSearchOptions();
@@ -131,46 +128,7 @@ namespace SketchEngine.Editor
                 previewMissingCount.ToString()
             );
 
-            DrawFoundList();
-
             GUILayout.EndVertical();
-        }
-
-        void DrawFoundList()
-        {
-            if (_found.Count == 0)
-                return;
-
-            GUILayout.Space(4);
-            GUILayout.Label($"GameObjects with missing scripts ({_found.Count})", EditorStyles.boldLabel);
-
-            _foundScroll = EditorGUILayout.BeginScrollView(_foundScroll, GUILayout.Height(160));
-
-            for (int i = 0; i < _found.Count; i++)
-            {
-                var (go, count) = _found[i];
-                if (go == null)
-                    continue;
-
-                if (GUILayout.Button($"{GetHierarchyPath(go.transform)}   ({count})", _rowStyle))
-                {
-                    Selection.activeGameObject = go;
-                    EditorGUIUtility.PingObject(go);
-                }
-            }
-
-            EditorGUILayout.EndScrollView();
-        }
-
-        static string GetHierarchyPath(Transform t)
-        {
-            string path = t.name;
-            while (t.parent != null)
-            {
-                t = t.parent;
-                path = $"{t.name}/{path}";
-            }
-            return path;
         }
 
         void DrawActions()
@@ -202,7 +160,6 @@ namespace SketchEngine.Editor
                     "Cancel"))
                 {
                     RemoveMissingScripts(GetTargetObjects());
-                    ScanPreview();
                 }
             }
             GUI.backgroundColor = Color.white;
@@ -234,22 +191,11 @@ namespace SketchEngine.Editor
         {
             previewObjectCount = 0;
             previewMissingCount = 0;
-            _found.Clear();
 
-            foreach (var root in GetTargetObjects())
+            foreach (var go in GetTargetObjects())
             {
-                var transforms = root.GetComponentsInChildren<Transform>(true);
-                foreach (var t in transforms)
-                {
-                    previewObjectCount++;
-
-                    int count = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject);
-                    if (count > 0)
-                    {
-                        previewMissingCount += count;
-                        _found.Add((t.gameObject, count));
-                    }
-                }
+                previewObjectCount++;
+                previewMissingCount += RecursiveMissingScriptCount(go);
             }
         }
 

@@ -5,12 +5,10 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace SketchEngine.Editor
+namespace CodeSketch.Editor
 {
-    public class Window_FindTextureUnusedInProject : SketchToolTab
+    public class Window_FindTextureUnusedInProject : EditorWindow
     {
-        public override string Title => "Unused Textures";
-
         const float ITEM_HEIGHT  = 38f;
         const float PREVIEW_SIZE = 32f;
 
@@ -22,10 +20,20 @@ namespace SketchEngine.Editor
         Vector2 scroll;
 
         // =====================================================
+        // MENU
+        // =====================================================
+
+        [MenuItem("CodeSketch/Tools/Texture/Find Unused Textures")]
+        static void Open()
+        {
+            GetWindow<Window_FindTextureUnusedInProject>("Unused Textures");
+        }
+
+        // =====================================================
         // GUI
         // =====================================================
 
-        public override void OnGUI()
+        void OnGUI()
         {
             GUILayout.Space(4);
             GUILayout.Label("Scan Folder", EditorStyles.boldLabel);

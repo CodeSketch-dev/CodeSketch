@@ -1,0 +1,18 @@
+{
+    "name": "CodeSketch.Popup",
+    "rootNamespace": "CodeSketch.UIPopup",
+    "references": [
+        "CodeSketch",
+        "CodeSketch.Audio",
+        "DOTween.Modules"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

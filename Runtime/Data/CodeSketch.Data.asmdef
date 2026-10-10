@@ -1,0 +1,17 @@
+{
+    "name": "CodeSketch.Data",
+    "rootNamespace": "CodeSketch.Data",
+    "references": [
+        "CodeSketch",
+        "OdinSerializer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,10 +1,10 @@
 using System;
-using SketchEngine.Mono;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
-    public class UIPointerDrag : MonoCached, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class UIPointerDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public Action<PointerEventData> EventDragBegin;
         public Action<PointerEventData> EventDrag;

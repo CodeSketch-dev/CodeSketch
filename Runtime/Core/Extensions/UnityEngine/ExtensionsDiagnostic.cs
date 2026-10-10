@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
-using SketchEngine.Diagnostics;
+using CodeSketch.Diagnostics;
 using UnityEngine;
 
-namespace SketchEngine.Core.Extensions
+namespace CodeSketch.Core.Extensions
 {
     public static class ExtensionsDiagnostic
     {
@@ -15,7 +15,7 @@ namespace SketchEngine.Core.Extensions
         )
         {
             // Log thông tin dòng, tên phương thức và file path
-            SketchDebug.Log($"{line} :: {memberName} :: {filePath}", context, Color.cyan);
+            CodeSketchDebug.Log($"{line} :: {memberName} :: {filePath}", context, Color.cyan);
         }
     }
 }

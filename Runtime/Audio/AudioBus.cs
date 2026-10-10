@@ -1,6 +1,6 @@
 using System;
 
-namespace SketchEngine.Audio
+namespace CodeSketch.Audio
 {
     /// <summary>
     /// Logical audio routing buses.

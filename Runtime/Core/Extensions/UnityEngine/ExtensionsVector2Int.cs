@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SketchEngine.Core.Extensions
+namespace CodeSketch.Core.Extensions
 {
     /// <summary>
     /// Các hàm mở rộng tiện ích cho Vector2Int.
@@ -95,7 +95,7 @@ namespace SketchEngine.Core.Extensions
             return v.x <= v.y;
         }
         
-        // So sánh gần đúng giữa 2 Vector2Int
+        // So sánh gần đúng giữa 2 Vector2
         public static bool Approximately(this Vector2Int a, Vector2Int b, float tolerance)
         {
             return (a - b).sqrMagnitude <= tolerance * tolerance;

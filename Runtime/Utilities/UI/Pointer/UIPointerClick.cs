@@ -1,10 +1,10 @@
 using System;
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using UnityEngine.EventSystems;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
-    public class UIPointerClick : MonoCached, IPointerDownHandler, IPointerUpHandler
+    public class UIPointerClick : MonoBase, IPointerDownHandler, IPointerUpHandler
     {
         public event Action EventDown;
         public event Action EventUp;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SketchEngine.Debug
+namespace CodeSketch.Debug
 {
     public class DebugToggle : DebugButton
     {

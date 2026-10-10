@@ -1,14 +1,16 @@
 ﻿using System;
+using CodeSketch.Mono;
 using PrimeTween;
 using UnityEngine;
 
-namespace SketchEngine.Utilities.Auto
+namespace CodeSketch.Utilities.Auto
 {
     /// <summary>
     /// This class is created for auto destroy or disable gameobject purpose
     /// </summary>
-    public class AutoDestructObject : MonoBehaviour
+    public class AutoDestructObject : MonoBase
     {
+        [Header("Config")]
         [SerializeField] float _delay = 0f;
         [SerializeField] bool _deactiveOnly = false;
 
@@ -18,13 +20,13 @@ namespace SketchEngine.Utilities.Auto
 
         #region MonoBehaviour
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             _tween.Stop();
-            _tween = Tween.Delay(_delay, Destruct, false, false);
+            _tween = Tween.Delay(_delay, Destruct);
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             _tween.Stop();
         }
@@ -34,9 +36,9 @@ namespace SketchEngine.Utilities.Auto
         void Destruct()
         {
             if (_deactiveOnly)
-                gameObject.SetActive(false);
+                GameObjectCached.SetActive(false);
             else
-                Destroy(gameObject);
+                Destroy(GameObjectCached);
 
             OnDestruct?.Invoke();
         }

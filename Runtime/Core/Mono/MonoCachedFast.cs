@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using UnityEngine;
 
-namespace SketchEngine
+namespace CodeSketch
 {
     public abstract class MonoCachedFast : MonoCached
     {

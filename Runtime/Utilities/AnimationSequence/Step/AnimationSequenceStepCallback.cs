@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace SketchEngine.Utilities.Animations
+namespace CodeSketch.Utilities.Animations
 {
     public class AnimationSequenceStepCallback : AnimationSequenceStep
     {
@@ -22,9 +22,9 @@ namespace SketchEngine.Utilities.Animations
         public override void AddToSequence(AnimationSequence animationSequence)
         {
             if (_isInserted)
-                animationSequence.Sequence.InsertCallback(_insertTime, () => { _callback?.Invoke(); });
+                animationSequence.sequence.InsertCallback(_insertTime, () => { _callback?.Invoke(); });
             else
-                animationSequence.Sequence.AppendCallback(() => { _callback?.Invoke(); });
+                animationSequence.sequence.AppendCallback(() => { _callback?.Invoke(); });
         }
     }
 }

@@ -1,11 +1,11 @@
 using System.Runtime.CompilerServices;
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SketchEngine.Core.UI
+namespace CodeSketch.Core.UI
 {
-    public class UIButtonBase : MonoCached
+    public class UIButtonBase : MonoBase
     {
         [SerializeField, HideInInspector] Button _button;
 
@@ -13,7 +13,7 @@ namespace SketchEngine.Core.UI
         {
             get
             {
-                if (_button == null)
+                if(_button == null)
                     _button = GetComponentInChildren<Button>(false);
 
                 return _button;

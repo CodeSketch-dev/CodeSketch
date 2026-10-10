@@ -1,19 +1,22 @@
 using System;
+using CodeSketch.Mono;
 using DG.Tweening;
 using Sirenix.OdinInspector;
-using SketchEngine.Mono;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
-    public class UIImageAnimated : MonoCached
+    public class UIImageAnimated : MonoBase
     {
+        [Header("Config")]
         [SerializeField] Sprite[] _frames;
 
         [Min(1)]
         [SerializeField] int _fps = 30;
+
         [SerializeField] int _loopCount = 0;
+
         [ShowIf("@_loopCount < 0")]
         [SerializeField] LoopType _loopType;
 
@@ -21,11 +24,12 @@ namespace SketchEngine.Utilities.UI
         Sequence _sequence;
 
         public Action OnRewind;
+        
         public Action OnStart;
         public Action<int, int> OnAnimated;
         public Action OnStop;
 
-        public Sequence Sequence
+        public Sequence sequence
         {
             get
             {
@@ -35,21 +39,12 @@ namespace SketchEngine.Utilities.UI
             }
         }
 
-        Image Image
-        {
-            get
-            {
-                if (_image == null)
-                    _image = GetComponentInChildren<Image>();
-                return _image;
-            }
-        }
-
         #region MonoBehaviour
 
         void Awake()
         {
-            if (_image == null) _image = Image;
+            _image = GetComponentInChildren<Image>();
+
             InitSequence();
         }
 
@@ -58,14 +53,18 @@ namespace SketchEngine.Utilities.UI
             _sequence?.Kill();
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             _sequence?.Restart();
             _sequence?.Play();
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
+            
             OnRewind = null;
             _sequence?.Pause();
         }
@@ -92,7 +91,7 @@ namespace SketchEngine.Utilities.UI
 
                 _sequence.AppendCallback(() => CallbackAnimated(i));
             }
-
+            
             _sequence.OnComplete(() => OnStop?.Invoke());
 
             _sequence.OnRewind(() => OnRewind?.Invoke());
@@ -111,7 +110,7 @@ namespace SketchEngine.Utilities.UI
             GameObjectCached.SetActive(true);
 
             OnRewind += () => GameObjectCached.SetActive(false);
-
+            
             _sequence.Pause();
             _sequence.PlayBackwards();
         }
@@ -119,11 +118,6 @@ namespace SketchEngine.Utilities.UI
         void SetFrame(int frameIndex)
         {
             _image.sprite = _frames[frameIndex];
-        }
-
-        void OnValidate()
-        {
-            if (_image == null) _image = Image;
         }
     }
 }

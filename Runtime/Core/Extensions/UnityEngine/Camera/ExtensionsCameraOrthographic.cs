@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SketchEngine.Core.Extensions
+namespace CodeSketch.Core.Extensions
 {
     /// <summary>
     /// Các hàm mở rộng dành riêng cho Camera Orthographic.
@@ -57,11 +57,12 @@ namespace SketchEngine.Core.Extensions
         }
 
         /// <summary>
-        /// Tọa độ Y ở mép trên của màn hình camera (world space).
+        /// Tọa độ Y ở mép trên của màn hình camera (tính theo world space).
+        /// +0.5f có thể là padding kỹ thuật.
         /// </summary>
         public static float Top(this Camera camera)
         {
-            return camera.transform.position.y + camera.GetHeight() * 0.5f;
+            return camera.transform.position.y + camera.GetHeight() + 0.5f;
         }
 
         /// <summary>

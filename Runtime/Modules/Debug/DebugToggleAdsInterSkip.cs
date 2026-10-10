@@ -1,13 +1,13 @@
-using SketchEngine.Data;
+using CodeSketch.Data;
 
-namespace SketchEngine.Debug
+namespace CodeSketch.Debug
 {
     public class DebugToggleAdsInterSkip : DebugToggle
     {
         protected override bool IsOn
-        {
-            get => DataMaster.AdsInterstitialSkip.Value;
-            set => DataMaster.AdsInterstitialSkip.Value = value;
+        { 
+            get => DataMaster.AdsInterSkip.Value;
+            set => DataMaster.AdsInterSkip.Value = value;
         }
     }
 }

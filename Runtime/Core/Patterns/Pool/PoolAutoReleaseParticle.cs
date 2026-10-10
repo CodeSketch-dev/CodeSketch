@@ -1,9 +1,9 @@
 using System;
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using PrimeTween;
 using UnityEngine;
 
-namespace SketchEngine.Patterns.Pool
+namespace CodeSketch.Patterns.Pool
 {
     public class PoolAutoReleaseParticle : MonoCached
     {

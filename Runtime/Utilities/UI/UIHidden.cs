@@ -1,40 +1,31 @@
-using SketchEngine.Data;
+using CodeSketch.Data;
+using CodeSketch.Mono;
 using UnityEngine;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
-    public class UIHidden : MonoBehaviour
+    public class UIHidden : MonoBase
     {
-        [SerializeField] CanvasGroup _canvasGroup;
+        CanvasGroup _canvasGroup;
 
-        CanvasGroup CanvasGroup
+         void Awake()
         {
-            get
-            {
-                if (_canvasGroup == null)
-                    _canvasGroup = GetComponent<CanvasGroup>();
-                if (_canvasGroup == null)
-                    _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-                return _canvasGroup;
-            }
-        }
+            _canvasGroup = GetComponent<CanvasGroup>();
 
-        void Awake()
-        {
             if (_canvasGroup == null)
-                _canvasGroup = CanvasGroup;
+                _canvasGroup = GameObjectCached.AddComponent<CanvasGroup>();
 
             DataMaster.UIHidden.OnValueChanged += UIHiddenValue_EventValueChanged;
 
             _canvasGroup.alpha = DataMaster.UIHidden.Value ? 0.0f : 1.0f;
         }
 
-        void OnDestroy()
+         void OnDestroy()
         {
             DataMaster.UIHidden.OnValueChanged -= UIHiddenValue_EventValueChanged;
         }
 
-        void UIHiddenValue_EventValueChanged(bool isHidden)
+         void UIHiddenValue_EventValueChanged(bool isHidden)
         {
             _canvasGroup.alpha = DataMaster.UIHidden.Value ? 0.0f : 1.0f;
         }

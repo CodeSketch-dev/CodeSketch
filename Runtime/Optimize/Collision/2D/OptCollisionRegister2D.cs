@@ -1,17 +1,12 @@
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using UnityEngine;
 
-namespace SketchEngine.Optimize
+namespace CodeSketch.Optimize
 {
-    /// <summary>
-    /// Kế thừa class này rồi implement bất kỳ số interface nào. Không generic, không giới hạn số type.
-    /// </summary>
-    public abstract class OptCollisionRegister2D : MonoCached
+    public abstract class OptCollisionRegister2D<T> : MonoCached where T : class
     {
         [SerializeField] protected Collider2D[] _colliders;
         [SerializeField] protected bool _manuallyAssignColliders;
-
-        int[] _colliderIds;
 
         protected virtual void Awake()
         {
@@ -19,16 +14,8 @@ namespace SketchEngine.Optimize
                 _colliders = GetComponentsInChildren<Collider2D>(true);
         }
 
-        protected virtual void OnEnable()
-        {
-            if (_colliders == null || _colliders.Length == 0) return;
-            _colliderIds = OptCollisionLookup2D.Register(this, _colliders, _colliderIds);
-        }
-
-        protected virtual void OnDisable()
-        {
-            OptCollisionLookup2D.Unregister(this, _colliderIds);
-        }
+        protected virtual void OnEnable() => OptCollisionLookup2D.Register<T>((T)(object)this, _colliders);
+        protected virtual void OnDisable() => OptCollisionLookup2D.Unregister<T>((T)(object)this, _colliders);
 
         protected virtual void OnValidate()
         {

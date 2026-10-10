@@ -1,25 +1,20 @@
-using PrimeTween;
-using SketchEngine.Mono;
+﻿using CodeSketch.Diagnostics;
 using UnityEngine;
-using UnityEngine.Audio;
+using PrimeTween;
 
-namespace SketchEngine.Audio
+using CodeSketch.Mono;
+
+namespace CodeSketch.Audio
 {
     public class AudioScript : MonoCached
     {
+        #region Properties
+
         AudioConfig _config;
         AudioSource _audioSource;
 
-        Tween _tweenDelay;
+        Tween _tweendelay;
         Tween _tweenVolume;
-
-        // Delegate tạo 1 lần trong Awake; tránh cấp phát mỗi lần phát.
-        System.Action _onFinished;
-        System.Action<SketchAudioType> _onStopAll;
-        System.Action<float> _onVolumeChanged;
-
-        // Đang được lấy ra khỏi pool. Dùng cờ này thay vì HashSet để Stop() idempotent và không GC.
-        bool _inUse;
 
         public AudioConfig Config => _config;
 
@@ -28,44 +23,47 @@ namespace SketchEngine.Audio
             get
             {
                 if (_audioSource == null)
-                    _audioSource = GetComponent<AudioSource>();
+                    _audioSource = GameObjectCached.GetComponent<AudioSource>();
+
                 return _audioSource;
             }
         }
+
+        #endregion
 
         #region MonoBehaviour
 
         void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null)
+                _audioSource = GetComponent<AudioSource>();
 
-            _onFinished = Stop;
-            _onStopAll = OnStopAll;
-            _onVolumeChanged = OnVolumeChanged;
+            AudioManager.VolumeSound.OnValueChanged += VolumeSound_EventValueChanged;
+            AudioManager.VolumnMusic.OnValueChanged += VolumeMusic_EventValueChanged;
 
-            AudioManager.VolumeSound.OnValueChanged += _onVolumeChanged;
-            AudioManager.VolumnMusic.OnValueChanged += _onVolumeChanged;
-            AudioManager.EventStopAll += _onStopAll;
+            AudioManager.EventStopAll += EventStopAll;
 
             AudioManager.Attach(transform);
         }
 
-        void OnDisable()
+        private void OnDestroy()
         {
-            _tweenDelay.Stop();
+            _tweendelay.Stop();
             _tweenVolume.Stop();
-            _inUse = false;
+
+            AudioManager.EventStopAll -= EventStopAll;
+
+            if (!AudioManager.HasInstance)
+                return;
+
+            AudioManager.VolumeSound.OnValueChanged -= VolumeSound_EventValueChanged;
+            AudioManager.VolumnMusic.OnValueChanged -= VolumeMusic_EventValueChanged;
         }
 
-        void OnDestroy()
+        void OnDisable()
         {
-            _tweenDelay.Stop();
+            _tweendelay.Stop();
             _tweenVolume.Stop();
-            _inUse = false;
-
-            AudioManager.EventStopAll -= _onStopAll;
-            AudioManager.VolumeSound.OnValueChanged -= _onVolumeChanged;
-            AudioManager.VolumnMusic.OnValueChanged -= _onVolumeChanged;
         }
 
         #endregion
@@ -74,32 +72,24 @@ namespace SketchEngine.Audio
 
         public void Play(AudioConfig config, bool loop = false)
         {
-            _inUse = true;
             Init(config, loop);
 
-            _tweenDelay.Stop();
+            _tweendelay.Stop();
 
-            if (!loop && _config != null && _config.Clip != null)
-            {
-                // Thời lượng thực = độ dài clip chia pitch, nếu không pitch khác 1 sẽ dừng sớm/muộn.
-                float speed = Mathf.Max(0.01f, Mathf.Abs(AudioSource.pitch));
-                _tweenDelay = Tween.Delay(_config.Clip.length / speed, _onFinished, false, false);
-            }
+            if (!loop)
+                _tweendelay = Tween.Delay(config.Clip.length, Stop, false, false);
         }
 
         public void Stop()
         {
-            // Idempotent: tween hết giờ, ForceStopAll, TryStop có thể gọi cùng lúc; chỉ release đúng một lần.
-            if (!_inUse) return;
-            _inUse = false;
+            if (!AudioManager.HasInstance)
+                return;
 
-            _tweenDelay.Stop();
+            _tweendelay.Stop();
             _tweenVolume.Stop();
+            AudioSource.Stop();
 
-            if (_audioSource != null)
-                _audioSource.Stop();
-
-            AudioManager.Release(this);
+            AudioManager.ReturnPool(this);
         }
 
         public void TryStop(AudioConfig config)
@@ -110,8 +100,7 @@ namespace SketchEngine.Audio
 
         public void TryStop(AudioClip clip)
         {
-            if (clip == null || !_inUse || AudioSource == null || !AudioSource.isPlaying) return;
-
+            if (clip == null || !AudioSource.isPlaying) return;
             if (AudioSource.clip == clip)
                 Stop();
         }
@@ -120,34 +109,24 @@ namespace SketchEngine.Audio
 
         #region Function -> Private
 
-        void OnStopAll(SketchAudioType type)
+        void EventStopAll(AudioType type)
         {
-            if (!_inUse || _config == null) return;
-
-            if (_config.Type == type)
+            if (_config == null) return;
+            if (_config.Type == type && AudioSource.isPlaying)
                 Stop();
-        }
-
-        void OnVolumeChanged(float _)
-        {
-            UpdateVolume();
         }
 
         float GetVolume()
         {
-            var channel = _config.Type == SketchAudioType.Music
-                ? AudioManager.VolumnMusic.Value
-                : AudioManager.VolumeSound.Value;
-
-            return _config.Volume * channel;
+            return _config.Volume * (_config.Type == AudioType.Music ? AudioManager.VolumnMusic.Value : AudioManager.VolumeSound.Value);
         }
 
         void UpdateVolume()
         {
-            if (_config == null || AudioSource == null) return;
+            if (_config == null) return;
 
             float volume = GetVolume();
-            AudioSource.mute = volume <= 0f;
+            AudioSource.mute = volume <= 0;
 
             if (Mathf.Approximately(AudioSource.volume, volume))
                 return;
@@ -156,14 +135,27 @@ namespace SketchEngine.Audio
             _tweenVolume = Tween.AudioVolume(AudioSource, volume, 0.1f);
         }
 
-        void Init(AudioConfig config, bool loop)
+
+        void VolumeSound_EventValueChanged(float volume)
+        {
+            UpdateVolume();
+        }
+
+        void VolumeMusic_EventValueChanged(float volume)
+        {
+            UpdateVolume();
+        }
+
+        void Init(AudioConfig config, bool loop = false)
         {
             if (config == null || config.Clip == null)
             {
-                SketchEngine.Diagnostics.SketchDebug.LogWarning("[AudioScript] Invalid config or clip!");
+                CodeSketchDebug.LogWarning("[AudioScript] Invalid config or clip!");
                 return;
             }
 
+            if (_audioSource == null)
+                _audioSource = AudioSource;
             if (AudioSource == null) return;
 
             _config = config;
@@ -173,14 +165,14 @@ namespace SketchEngine.Audio
             AudioSource.minDistance = config.EarsDistance.x;
             AudioSource.maxDistance = config.EarsDistance.y;
             AudioSource.spatialBlend = config.Mode == AudioMode.Mode3D ? 1f : 0f;
+
             AudioSource.rolloffMode = AudioRolloffMode.Logarithmic;
 
-            // Tắt doppler để tránh méo âm khi nguồn/listener di chuyển.
-            AudioSource.dopplerLevel = 0f;
+            // Tắt bỏ logic quyết định mức độ thay đổi cao độ (pitch) khi nguồn âm hoặc AudioListener di chuyển so với nhau.
+            // Tránh trường hợp méo âm thanh
+            AudioSource.dopplerLevel = 0;
 
-            AudioMixerGroup group = config.Bus == AudioBus.Master ? null : AudioMixerFactory.GetGroup(config.Bus);
-            if (AudioSource.outputAudioMixerGroup != group)
-                AudioSource.outputAudioMixerGroup = group;
+            AudioSource.outputAudioMixerGroup = config.Bus == AudioBus.Master ? null : AudioMixerFactory.GetGroup(config.Bus);
 
             UpdateVolume();
             AudioSource.Play();

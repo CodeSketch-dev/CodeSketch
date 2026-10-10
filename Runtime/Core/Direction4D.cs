@@ -1,4 +1,4 @@
-namespace SketchEngine.Core
+namespace CodeSketch.Core
 {
     [System.Serializable]
     public enum Direction4D

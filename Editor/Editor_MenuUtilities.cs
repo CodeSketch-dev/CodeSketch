@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SketchEngine.Editor
+namespace CodeSketch.Editor
 {
     /// <summary>
     /// Bộ công cụ tiện ích cho Editor trong GOCD Framework
@@ -13,14 +13,14 @@ namespace SketchEngine.Editor
     {
         #region Data
 
-        [MenuItem("SketchEngine/Data/Clear PlayerPrefs", false)]
+        [MenuItem("CodeSketch/Data/Clear PlayerPrefs", false)]
         static void ClearPlayerPrefs()
         {
             PlayerPrefs.DeleteAll();
             Debug.Log("✅ Đã xoá toàn bộ PlayerPrefs");
         }
 
-        [MenuItem("SketchEngine/Data/Clear Game Data", false)]
+        [MenuItem("CodeSketch/Data/Clear Game Data", false)]
         static void ClearGameData()
         {
             DirectoryInfo di = new DirectoryInfo(Application.persistentDataPath);
@@ -34,14 +34,14 @@ namespace SketchEngine.Editor
             Debug.Log("✅ Đã xoá toàn bộ file trong persistentDataPath");
         }
 
-        [MenuItem("SketchEngine/Data/Clear Caching", false)]
+        [MenuItem("CodeSketch/Data/Clear Caching", false)]
         static void ClearCache()
         {
             Caching.ClearCache();
             Debug.Log("✅ Đã xoá cache Unity (AssetBundle, Addressables...)");
         }
 
-        [MenuItem("SketchEngine/Data/Clear All", false)]
+        [MenuItem("CodeSketch/Data/Clear All", false)]
         static void ClearAll()
         {
             ClearPlayerPrefs();
@@ -49,7 +49,7 @@ namespace SketchEngine.Editor
             ClearCache();
         }
 
-        [MenuItem("SketchEngine/Data/Open GameData Directory", false)]
+        [MenuItem("CodeSketch/Data/Open GameData Directory", false)]
         static void OpenGameData()
         {
             // Mở thư mục chứa dữ liệu game
@@ -63,7 +63,7 @@ namespace SketchEngine.Editor
         static readonly float s_slowTimeScale = 0.1f;
         static bool s_slowed;
 
-        [MenuItem("SketchEngine/Game/Pause or Resume _F2", false)]
+        [MenuItem("CodeSketch/Game/Pause or Resume _F2", false)]
         static void Pause()
         {
             if (!Application.isPlaying) return;
@@ -74,7 +74,7 @@ namespace SketchEngine.Editor
                 EditorApplication.isPaused = false; // Tiếp tục
         }
 
-        [MenuItem("SketchEngine/Game/Slow or Resume _F3", false)]
+        [MenuItem("CodeSketch/Game/Slow or Resume _F3", false)]
         static void Slow()
         {
             if (!Application.isPlaying) return;
@@ -85,7 +85,7 @@ namespace SketchEngine.Editor
             Debug.Log($"⚙ Time.timeScale = {Time.timeScale}");
         }
 
-        [MenuItem("SketchEngine/Game/Reload Scene _F5", false)]
+        [MenuItem("CodeSketch/Game/Reload Scene _F5", false)]
         static void ReloadScene()
         {
             if (!Application.isPlaying) return;
@@ -98,7 +98,7 @@ namespace SketchEngine.Editor
 
         #region Screenshot
 
-        [MenuItem("SketchEngine/Capture Screenshot _F4", false)]
+        [MenuItem("CodeSketch/Capture Screenshot _F4", false)]
         static void CaptureScreenshot()
         {
             // Tạo tên file dạng yyyy-MM-dd_HH-mm-ss.png

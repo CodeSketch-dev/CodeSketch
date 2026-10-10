@@ -1,12 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
-using SketchEngine.Mono;
 using TMPro;
 using UnityEngine;
 
-namespace SketchEngine.Core.Text
+using CodeSketch.Mono;
+
+namespace CodeSketch.Core.Text
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
-    public class UITextBase : MonoCached
+    public class UITextBase : MonoBase
     {
         [SerializeField] TextMeshProUGUI _text;
 

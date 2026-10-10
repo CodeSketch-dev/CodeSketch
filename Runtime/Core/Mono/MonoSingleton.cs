@@ -1,8 +1,8 @@
 using System.Threading;
-using SketchEngine.Diagnostics;
+using CodeSketch.Diagnostics;
 using UnityEngine;
 
-namespace SketchEngine.Mono
+namespace CodeSketch.Mono
 {
     /// <summary>
     /// Singleton pattern implementation for MonoBehaviour classes.
@@ -14,7 +14,7 @@ namespace SketchEngine.Mono
     /// - Protection against accessing destroyed instances
     /// </summary>
     [DefaultExecutionOrder(-50)]
-    public abstract class MonoSingleton<T> : MonoCached where T : MonoSingleton<T>
+    public abstract class MonoSingleton<T> : MonoBase where T : MonoSingleton<T>
     {
         /// <summary>
         /// Should this singleton persist across scene loads?
@@ -35,7 +35,7 @@ namespace SketchEngine.Mono
             {
                 if (IsDestroyed)
                 {
-                    SketchDebug.LogError<T>(
+                    CodeSketchDebug.LogError<T>(
                         $"{typeof(T)} is already destroyed. " +
                         $"Check {nameof(HasInstance)} or {nameof(IsDestroyed)} before accessing instance in the destructor.");
                     return null;
@@ -88,7 +88,7 @@ namespace SketchEngine.Mono
         {
             if (HasInstance)
             {
-                SketchDebug.LogWarning<T>($"Attempting to create {typeof(T).Name} instance, but one already exists.");
+                CodeSketchDebug.LogWarning<T>($"Attempting to create {typeof(T).Name} instance, but one already exists.");
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace SketchEngine.Mono
                     Interlocked.CompareExchange(ref _instance, created, null);
                     IsDestroyed = false;
 
-                    SketchDebug.Log<T>($"Created singleton instance of {typeof(T).Name}");
+                    CodeSketchDebug.Log<T>($"Created singleton instance of {typeof(T).Name}");
                 }
             }
         }
@@ -118,12 +118,12 @@ namespace SketchEngine.Mono
                 if (PersistAcrossScenes)
                 {
                     DontDestroyOnLoad(GameObjectCached);
-                    SketchDebug.Log<T>($"Singleton {typeof(T).Name} marked as DontDestroyOnLoad");
+                    CodeSketchDebug.Log<T>($"Singleton {typeof(T).Name} marked as DontDestroyOnLoad");
                 }
             }
             else if (_instance != this)
             {
-                SketchDebug.Log<T>($"Duplicate singleton {typeof(T).Name} detected. Destroying duplicate.");
+                CodeSketchDebug.Log<T>($"Duplicate singleton {typeof(T).Name} detected. Destroying duplicate.");
                 Destroy(GameObjectCached);
             }
         }
@@ -144,7 +144,7 @@ namespace SketchEngine.Mono
         public static void Attach(Transform other)
         {
             if (!HasInstance) return;
-
+            
             other.SetParent(Instance.TransformCached, false);
         }
 

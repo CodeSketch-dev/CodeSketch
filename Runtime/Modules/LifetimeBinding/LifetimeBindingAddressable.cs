@@ -4,7 +4,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using ArgumentNullException = System.ArgumentNullException;
 
-namespace SketchEngine.Modules.Lifetime
+namespace CodeSketch.Modules.Lifetime
 {
     /// <summary>
     /// LifetimeBindingAddressable

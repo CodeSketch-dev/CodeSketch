@@ -1,18 +1,18 @@
 using System;
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using PrimeTween;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
     /// <summary>
     /// Quản lý hiển thị và ẩn một UI Group có hiệu ứng fade (CanvasGroup).
     /// Gồm sự kiện callback, UnityEvent, và DOTween hỗ trợ fade.
     /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
-    public class UIGroup : MonoCached
+    public class UIGroup : MonoBase
     {
         [Title("Config")]
         [SerializeField] float _fadeInDuration = 0.3f;
@@ -32,7 +32,7 @@ namespace SketchEngine.Utilities.UI
         public Action OnHideComplete;
 
         /// <summary>CanvasGroup được cache</summary>
-        public CanvasGroup CanvasGroup => _canvasGroup ??= GetComponent<CanvasGroup>();
+        public CanvasGroup canvasGroup => _canvasGroup ??= GetComponent<CanvasGroup>();
 
         void OnDestroy()
         {
@@ -46,7 +46,7 @@ namespace SketchEngine.Utilities.UI
         {
             GameObjectCached.SetActive(true);
 
-            var cg = CanvasGroup;
+            var cg = canvasGroup;
             cg.blocksRaycasts = true;
             cg.interactable = true;
 
@@ -68,7 +68,7 @@ namespace SketchEngine.Utilities.UI
             if (!GameObjectCached.activeInHierarchy)
                 return;
 
-            var cg = CanvasGroup;
+            var cg = canvasGroup;
             cg.blocksRaycasts = false;
             cg.interactable = false;
 

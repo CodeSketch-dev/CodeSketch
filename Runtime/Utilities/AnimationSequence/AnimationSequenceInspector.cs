@@ -4,7 +4,7 @@ using DG.DOTweenEditor;
 using UnityEditor;
 using UnityEngine;
 
-namespace SketchEngine.Utilities.Animations
+namespace CodeSketch.Utilities.Animations
 {
     [CustomEditor(typeof(AnimationSequence))]
     public class AnimationSequenceInspector : Sirenix.OdinInspector.Editor.OdinEditor

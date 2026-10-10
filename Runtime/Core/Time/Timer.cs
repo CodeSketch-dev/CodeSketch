@@ -1,6 +1,6 @@
 using System;
 
-namespace SketchEngine.Core.Time
+namespace CodeSketch.Core.Time
 {
     /// <summary>
     /// Base class for frame-based runtime timers.
@@ -19,7 +19,7 @@ namespace SketchEngine.Core.Time
     /// - Cooldown across sessions
     /// - Offline progress
     /// - IAP / reward timers
-    /// Use UtilityTime (Unix time) instead.
+    /// Use UtilsTime (Unix time) instead.
     /// </summary>
     public abstract class Timer
     {

@@ -1,9 +1,9 @@
 using System;
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SketchEngine.Patterns.Pool
+namespace CodeSketch.Patterns.Pool
 {
     public class PoolPrefabItem : MonoCachedOpt
     {

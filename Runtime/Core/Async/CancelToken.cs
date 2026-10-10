@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace SketchEngine.Core.Async
+namespace CodeSketch.Core.Async
 {
     public class CancelToken
     {

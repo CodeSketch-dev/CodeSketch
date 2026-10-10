@@ -1,7 +1,7 @@
-﻿using SketchEngine.Core.UI;
+﻿using CodeSketch.Core.UI;
 using UnityEngine;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
     public class UIButtonOpenURL : UIButtonBase
     {

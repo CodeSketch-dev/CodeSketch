@@ -1,12 +1,12 @@
 using UnityEngine;
 
-using SketchEngine.SO.Editor;
+using CodeSketch.SO.Editor;
 
-namespace SketchEngine.SO
+namespace CodeSketch.SO
 {
     public abstract class ScriptableObjectSingleton<T> : ScriptableObject where T : ScriptableObject
     {
-        static string s_rootFolderName => "SketchEngine/ScriptableObjectSingletons";
+        static string s_rootFolderName => "CodeSketch/ScriptableObjectSingletons";
         
         static T s_instance = null;
         

@@ -1,7 +1,0 @@
-<linker>
-  <assembly fullname="SketchEngine.Utilities">
-    <type fullname="SketchEngine.Utilities.CompactValue" preserve="all" />
-    <type fullname="SketchEngine.Utilities.CompactValueFormatter" preserve="all" />
-    <type fullname="SketchEngine.Utilities.CompactDataValueFormatter" preserve="all" />
-  </assembly>
-</linker>

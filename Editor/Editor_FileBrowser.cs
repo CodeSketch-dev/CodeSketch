@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace SketchEngine.Editor
+namespace CodeSketch.Editor
 {
     public static class Editor_FileBrowser
     {

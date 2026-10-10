@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using SketchEngine.Mono;
+using CodeSketch.Mono;
 using UnityEngine;
 
-namespace SketchEngine.Core.Async
+namespace CodeSketch.Core.Async
 {
     /// <summary>
     /// Global coroutine runner.
@@ -128,10 +128,9 @@ namespace SketchEngine.Core.Async
             action.Invoke();
         }
 
-        // yield trực tiếp IEnumerator: Unity chạy nó lồng trong coroutine này, không cần StartCoroutine thêm.
         IEnumerator Co_RunCoroutine(IEnumerator coroutine, Action onComplete)
         {
-            yield return coroutine;
+            yield return StartCoroutine(coroutine);
             onComplete?.Invoke();
         }
     }

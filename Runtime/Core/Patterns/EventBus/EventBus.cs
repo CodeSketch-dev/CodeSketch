@@ -1,6 +1,6 @@
 using System;
 
-namespace SketchEngine.Patterns.Observer
+namespace CodeSketch.Patterns.Observer
 {
     /// <summary>
     /// Basic implementation of the <see cref="IEventBus"/>.

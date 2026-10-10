@@ -1,7 +1,7 @@
 using System;
 using Sirenix.OdinInspector;
 
-namespace SketchEngine.Audio
+namespace CodeSketch.Audio
 {
     [Serializable]
     public enum AudioMode

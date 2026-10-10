@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using PrimeTween;
 
-namespace SketchEngine.Utilities.UI
+namespace CodeSketch.Utilities.UI
 {
     public class UIPressPrimeTween : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerUpHandler, IPointerExitHandler
     {
@@ -16,12 +16,12 @@ namespace SketchEngine.Utilities.UI
         [SerializeField] float _duration = 0.1f;
 
         Vector3 _startScale;
-
+        
         Tween _tween;
         bool _isDown;
 
         Button _button;
-        Button Button => _button != null ? _button : (_button = GetComponent<Button>());
+        Button button => _button != null ? _button : (_button = GetComponent<Button>());
 
         void Awake()
         {
@@ -57,7 +57,7 @@ namespace SketchEngine.Utilities.UI
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
-            if (Button != null && !Button.interactable) return;
+            if (button != null && !button.interactable) return;
 
             _isDown = true;
             ScaleTo(_scaleThreshold);
